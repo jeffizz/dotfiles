@@ -13,17 +13,21 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
   end
-end ---@diagnostic disable-next-line: undefined-field
-vim.opt.rtp:prepend(lazypath)
+end
+
+---@type vim.Option
+local rtp = vim.opt.rtp
+rtp:prepend(lazypath)
 vim.api.nvim_set_keymap('n', '<leader>p', ':Lazy<CR>', { noremap = true, silent = true })
 
 require('lazy').setup({
 
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  { 'NMAC427/guess-indent.nvim', cond = not vim.g.vscode, opts = {} },
 
   { -- Startify
     'goolord/alpha-nvim',
+    cond = not vim.g.vscode,
     -- dependencies = { 'echasnovski/mini.icons' },
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
@@ -41,6 +45,7 @@ require('lazy').setup({
   },
   { -- Color theme
     'sainnhe/everforest',
+    cond = not vim.g.vscode,
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       vim.cmd.colorscheme 'everforest'
