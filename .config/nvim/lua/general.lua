@@ -54,13 +54,11 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
-
-
 -- Line number width
 vim.wo.numberwidth = 1
 
 -- Color Maximum line characters
-vim.wo.colorcolumn = '100'
+vim.wo.colorcolumn = '80'
 
 -- Code folding
 vim.opt.foldmethod = 'indent'
@@ -72,4 +70,3 @@ vim.opt.softtabstop = 2
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 4
-
