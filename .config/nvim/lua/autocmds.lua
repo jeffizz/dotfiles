@@ -37,11 +37,3 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     end
   end,
 })
-
--- Change default commentstring
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'php',
-  callback = function()
-    vim.bo.commentstring = '// %s'
-  end,
-})

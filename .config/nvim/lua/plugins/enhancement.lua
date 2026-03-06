@@ -10,6 +10,13 @@ return {
     opts = { signs = false },
   },
 
+  { -- Enhance Neovim's native comments
+    'folke/ts-comments.nvim',
+    cond = not vim.g.vscode,
+    opts = {},
+    event = 'VeryLazy',
+  },
+
   { -- Collection of various small independent plugins/modules
     'nvim-mini/mini.nvim',
     config = function()
