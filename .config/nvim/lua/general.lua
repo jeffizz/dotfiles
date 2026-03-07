@@ -58,7 +58,7 @@ vim.opt.scrolloff = 10
 vim.wo.numberwidth = 1
 
 -- Color Maximum line characters
-vim.wo.colorcolumn = '80'
+vim.wo.colorcolumn = '80,120'
 
 -- Code folding
 vim.opt.foldmethod = 'indent'
