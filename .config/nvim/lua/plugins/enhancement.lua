@@ -89,4 +89,14 @@ return {
     cond = not vim.g.vscode,
     config = function() end,
   },
+
+  { -- Under cursor word highlight
+    'RRethy/vim-illuminate',
+    cond = vim.g.vscode,
+    config = function()
+      vim.api.nvim_set_hl(0, 'illuminatedWordText', { bg = 'NONE', fg = '#11bbcc' })
+      vim.api.nvim_set_hl(0, 'illuminatedWordRead', { bg = 'NONE', fg = '#11bbcc' })
+      vim.api.nvim_set_hl(0, 'illuminatedWordWrite', { bg = 'NONE', fg = '#11bbcc' })
+    end,
+  },
 }
