@@ -57,6 +57,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
           '^Music/',
           '^Applications/',
           '^Pictures/',
+          '^Canada/',
           '%w+/pkg/mod/',
           '%.css',
           '%.pdf',
