@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# --- Configuration ---
+# Target directory in your dotfiles
+BACKUP_DIR="$HOME/.config/vscode"
+
+# Determine the VS Code User directory based on the OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS path
+    SOURCE_DIR="$HOME/Library/Application Support/Code/User"
+else
+    # Linux path
+    SOURCE_DIR="$HOME/.config/Code/User"
+fi
+
+# Ensure the backup directory exists
+mkdir -p "$BACKUP_DIR"
+
+echo "🚀 Starting VS Code configuration backup to $BACKUP_DIR..."
+
+# --- Backup Process ---
+
+# 1. Copy core JSON configuration files
+if [ -f "$SOURCE_DIR/settings.json" ]; then
+    cp "$SOURCE_DIR/settings.json" "$BACKUP_DIR/"
+    echo "✔ Copied settings.json"
+fi
+
+if [ -f "$SOURCE_DIR/keybindings.json" ]; then
+    cp "$SOURCE_DIR/keybindings.json" "$BACKUP_DIR/"
+    echo "✔ Copied keybindings.json"
+fi
+
+# 2. Recursively copy the snippets folder
+if [ -d "$SOURCE_DIR/snippets" ]; then
+    cp -r "$SOURCE_DIR/snippets" "$BACKUP_DIR/"
+    echo "✔ Copied snippets folder"
+fi
+
+# 3. Export the list of installed extensions
+# This allows you to reinstall them easily using:
+# cat extensions.txt | xargs -L 1 code --install-extension
+if command -v code >/dev/null 2>&1; then
+    code --list-extensions > "$BACKUP_DIR/extensions.txt"
+    echo "✔ Exported extension list to extensions.txt"
+else
+    echo "✘ Warning: 'code' command not found. Skipping extension export."
+fi
+
+echo "---"
+echo "✅ Backup complete!"
+echo "You can now run 'got status' to review and commit your changes."[]
