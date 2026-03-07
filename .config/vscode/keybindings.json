@@ -1,0 +1,119 @@
+// References:
+// https://code.visualstudio.com/api/references/when-clause-contexts
+// https://code.visualstudio.com/docs/getstarted/keybindings#_basic-editing
+
+[
+    // --- Window & Panel Navigation (Vim-style) ---
+    {
+        "key": "ctrl+j",
+        "command": "workbench.action.terminal.focus",
+        "comment": "Focus on the integrated terminal"
+    },
+    {
+        "key": "ctrl+h",
+        "command": "workbench.action.navigateLeft",
+        "when": "!terminalFocus",
+        "comment": "Navigate to the left panel (e.g., from editor to sidebar)"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "workbench.action.focusFirstEditorGroup",
+        "when": "terminalFocus",
+        "comment": "Jump from terminal back to the main editor group"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "workbench.action.focusLastEditorGroup",
+        "when": "editorFocus",
+        "comment": "Focus the last used editor group"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "workbench.action.focusFirstEditorGroup",
+        "when": "filesExplorerFocus",
+        "comment": "Jump from file explorer back to the editor"
+    },
+
+    // --- Neovim Specific (Leader-style Space keys) ---
+    {
+        "key": "space w",
+        "command": "workbench.action.closeActiveEditor",
+        "when": "editorFocus && neovim.init && neovim.mode == 'normal'",
+        "comment": "Vim Normal Mode: Space + w to close current tab"
+    },
+    {
+        "key": "space e",
+        "command": "workbench.view.explorer",
+        "when": "editorFocus && neovim.init && neovim.mode == 'normal' && !explorerViewletVisible",
+        "comment": "Vim Normal Mode: Space + e to open sidebar if hidden"
+    },
+    {
+        "key": "space e",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "editorFocus && neovim.init && neovim.mode == 'normal' && explorerViewletVisible",
+        "comment": "Vim Normal Mode: Space + e to hide sidebar if visible"
+    },
+    {
+        "key": "space e",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "filesExplorerFocus",
+        "comment": "Close sidebar when focus is on the file explorer"
+    },
+
+    // --- Terminal & Tmux (Prefix: Ctrl+a) ---
+    {
+        "key": "ctrl+a b",
+        "command": "workbench.action.quickOpenTerm",
+        "when": "editorFocus",
+        "comment": "Quickly switch between multiple terminals"
+    },
+    {
+        "key": "ctrl+a ctrl+l",
+        "command": "workbench.action.terminal.clear",
+        "when": "terminalFocus",
+        "comment": "Clear terminal screen using Tmux-style shortcut"
+    },
+    {
+        "key": "ctrl+a h",
+        "command": "workbench.view.explorer",
+        "when": "terminalFocus",
+        "comment": "Jump from terminal to file explorer"
+    },
+    {
+        "key": "ctrl+a b",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u0001b" },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+a c",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u0001c" },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+a 1",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u00011" },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+a 2",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u00012" },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+a i",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u0001i" },
+        "when": "terminalFocus"
+    },
+    {
+        "key": "ctrl+a ctrl+a",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u001b[1~" },
+        "when": "terminalFocus",
+        "comment": "Map Ctrl+a Ctrl+a to Home/Beginning of line in terminal"
+    },
+]
