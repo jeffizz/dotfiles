@@ -30,6 +30,11 @@ alias proxy.off='proxy_off'
 
 alias restic='. ~/.config/restic/env; restic'
 
+alias v='source ~/bin/vscode'
+function d {
+    source ~/bin/vscode "$@" --no-vscode
+}
+
 function backup {
     restic backup --quiet --tag canada /Users/codiy/Canada/*
     # 最近10年每年保留1条, 最近6个月每个月保留1条, 最近4周每周保留1条, 保留最近5条
@@ -44,6 +49,47 @@ function backup {
 
 function restore {
     restic restore latest --host mbp.local --path /Users/codiy/Canada/$1 --target ${2:-/}
+}
+
+# PDF Archive & Optimization: High-fidelity compression + PDF/A conversion
+function opdf() {
+    local input_file="$1"
+    local opt_level="${2:-1}"
+
+    if [[ ! -f "$input_file" ]]; then
+        echo "Error: File '$input_file' not found."
+        return 1
+    fi
+
+    local output_base="${input_file%.*}"
+    local output_file="${output_base}_out.pdf"
+
+    echo "Processing: $input_file -> $output_file ..."
+
+    docker run --rm \
+        -v "$(pwd):/data" \
+        -w /data \
+        --user "$(id -u):$(id -g)" \
+        jbarlow83/ocrmypdf \
+        --optimize "$opt_level" \
+        --output-type pdfa \
+        --skip-text \
+        --language eng+chi_sim \
+        "$input_file" "$output_file"
+
+    if [ $? -eq 0 ]; then
+        echo "Success: Generated $output_file"
+    else
+        echo "Error: PDF processing failed."
+        return 1
+    fi
+}
+function pdf {
+    docker run --rm -i \
+        --user "$(id -u):$(id -g)" \
+        -v "$(pwd):/data" \
+        -w /data \
+        jbarlow83/ocrmypdf "$@"
 }
 
 # 命令别名 - 通用
@@ -158,23 +204,6 @@ function intersect() {
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/terraform terraform
 
-function pv {
-    if [ "$#" -eq 1 ]; then
-        source ~/Repos/pyenv/$1/bin/activate
-    fi
-}
-
-function pvc {
-    if [ "$#" -eq 1 ]; then
-        python3 -m venv ~/Repos/pyenv/$1
-    fi
-
-    if [ "$#" -eq 2 ]; then
-        $1 -m venv ~/Repos/pyenv/$2
-    fi
-}
-alias pta='eval $(poetry env activate)'
-alias pt='poetry'
 # -- 根据私钥生成公钥
 # ssh-keygen -y -f ~/.ssh/privateKey
 

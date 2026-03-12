@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# --- Configuration ---
+PROJECT_ROOTS=(
+    "$HOME/.config"
+    "$HOME/Repos"
+)
+
+
+OPEN_VSCODE=true
+for arg in "$@"; do
+    if [[ "$arg" == "--no-vscode" ]]; then
+        OPEN_VSCODE=false
+        break
+    fi
+done
+
+# Dependency Check
+if ! command -v fzf &> /dev/null; then
+    echo "Error: fzf is not installed."
+    exit 1
+fi
+
+# 1. Filter existing roots
+EXISTING_ROOTS=()
+for root in "${PROJECT_ROOTS[@]}"; do
+    [ -d "$root" ] && EXISTING_ROOTS+=("$root")
+done
+
+# 2. Search for Directories OR .code-workspace files using fzf
+SELECTED=$(find "${EXISTING_ROOTS[@]}" -maxdepth 1 \
+    \( -type d -o -name "*.code-workspace" \) 2>/dev/null \
+    | fzf --query="$1" --select-1 --exit-0)
+
+if [ -z "$SELECTED" ]; then
+    # We use return if sourced, exit if run directly
+    (return 0 2>/dev/null) && return 0 || exit 0
+fi
+
+# Helper: Pure Shell path extraction from JSON
+parse_ws_path() {
+    local file="$1"
+    # Matches the first '"path": "..."' and extracts the value
+    grep '"path":' "$file" | head -n 1 | sed 's/.*"path": *"\([^"]*\)".*/\1/'
+}
+
+TARGET_DIR=""
+
+# 3. Execution & Path Logic
+if [[ "$SELECTED" == *.code-workspace ]]; then
+    # Case A: A workspace file was selected directly
+    WS_DIR=$(dirname "$SELECTED")
+    RAW_PATH=$(parse_ws_path "$SELECTED")
+
+    if [[ "$RAW_PATH" == "." || -z "$RAW_PATH" ]]; then
+        TARGET_DIR="$WS_DIR"
+    elif [[ "$RAW_PATH" == /* ]]; then
+        TARGET_DIR="$RAW_PATH"
+    else
+        TARGET_DIR=$(cd "$WS_DIR" && cd "$RAW_PATH" 2>/dev/null && pwd)
+    fi
+
+    if [[ $OPEN_VSCODE == true ]]; then
+        echo "🚀 Opening Workspace: $(basename "$SELECTED")"
+        code "$SELECTED"
+    fi
+else
+    # Case B: A directory was selected
+    TARGET_DIR="$SELECTED"
+    if [[ $OPEN_VSCODE == true ]]; then
+        echo "📂 Opening folder: $(basename "$SELECTED")"
+        env -u TMUX code "$SELECTED"
+    fi
+fi
+
+# 4. Synchronize Terminal Directory
+if [ -d "$TARGET_DIR" ]; then
+    # CRITICAL: This cd only works for the current shell
+    cd "$TARGET_DIR" || exit
+else
+    cd "$(dirname "$SELECTED")" 2>/dev/null || exit
+fi
