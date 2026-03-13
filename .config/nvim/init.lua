@@ -97,3 +97,5 @@ require('lazy').setup({
     },
   },
 })
+
+require 'color'

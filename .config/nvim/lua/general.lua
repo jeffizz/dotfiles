@@ -70,6 +70,3 @@ vim.opt.softtabstop = 2
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 4
-
--- Auto Change Directory
-vim.opt.autochdir = true
