@@ -3,7 +3,37 @@
 // https://code.visualstudio.com/docs/getstarted/keybindings#_basic-editing
 
 [
+    {
+        "key": "cmd+b",
+        "command": "-workbench.action.toggleSidebarVisibility"
+    },
+    {
+        "key": "cmd+b",
+        "command": "workbench.action.toggleActivityBarVisibility"
+    },
     // --- Window & Panel Navigation (Vim-style) ---
+    {
+        "key": "alt+h",
+        "command": "workbench.action.decreaseViewWidth",
+        "when": "!terminalFocus",
+    },
+    {
+        "key": "alt+l",
+        "command": "workbench.action.increaseViewWidth",
+        "when": "!terminalFocus",
+    },
+    {
+        "key": "alt+h",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u001bh" },
+        "when": "terminalFocus",
+    },
+    {
+        "key": "alt+l",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": { "text": "\u001bl" },
+        "when": "terminalFocus",
+    },
     {
         "key": "ctrl+j",
         "command": "workbench.action.terminal.focus",

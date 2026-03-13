@@ -1,0 +1,87 @@
+{
+    // --- Appearance & UI ---
+    "window.zoomLevel": 0,
+    "editor.fontSize": 14,                           // Set the editor font size
+    "editor.lineHeight": 1.2,                        // Increase line height for better readability
+    "workbench.activityBar.location": "hidden",      // Hide the activity bar on the left
+    "workbench.colorTheme": "Everforest Night Hard", // Set the overall color theme
+    "workbench.iconTheme": "material-icon-theme",    // Use Material Icons for file icons
+    "editor.minimap.enabled": false,                 // Disable the minimap (the code preview on the right)
+    "explorer.openEditors.visible": 0,               // Hide the "Open Editors" section in the sidebar
+    "window.density.editorTabHeight": "compact",     // Make editor tabs shorter to save vertical space
+    "workbench.editor.labelFormat": "short",         // Use shorter labels for editor tabs
+    // "editor.renderWhitespace": "all",                // Always show whitespace characters (dots/arrows)
+    "editor.lineDecorationsWidth": 0,                // !!!! It's Valid !!!! Remove extra space for line decorations
+    "editor.rulers": [
+        80,
+        120
+    ],
+
+    // --- Borders & UI Customization ---
+    "workbench.colorCustomizations": {
+        "sideBar.border": "#444444",               // Custom border color for the sidebar
+        "panel.border": "#444444",                 // Custom border color for the bottom panel
+        "activityBar.border": "#444444",           // Custom border color for the activity bar (left)
+        "editorGroupHeader.tabsBorder": "#444444", // Custom border color for the tabs area
+        "editorLineNumber.foreground": "#858585",  // Custom color for line numbers
+        "editorLineNumber.activeForeground": "#c6c6c6", // Custom color for the active line number
+        "editorGutter.addedBackground": "#43A047",
+        "editorGutter.modifiedBackground": "#FFB300",
+        "editorGutter.deletedBackground": "#E53935",
+    }, // Set the editor font size
+    "editor.fontFamily": "'CaskaydiaCove Nerd Font Mono'", // Set the editor font (Nerd Font for icons)
+    "editor.suggestSelection": "first",                    // Always select the first suggestion in the completion list
+    "editor.formatOnSave": false,                          // Global setting: Do NOT format files on save
+    "files.trimTrailingWhitespace": true,                  // Automatically remove spaces at the end of lines on save
+    "dateTime.customFormat": "YYYY-MM-DD HH:mm:ss",        // Custom format for date/time extensions
+
+    // --- Files & Filtering ---
+    "files.exclude": {
+        "**/.classpath": true,   // Hide Java/Eclipse classpath files
+        "**/.project": true,     // Hide project metadata files
+        "**/.settings": true,    // Hide IDE-specific settings folders
+        "**/.factorypath": true  // Hide annotation processor settings
+    },
+
+    // --- Terminal ---
+    "terminal.integrated.fontSize": 14,           // Set font size for the integrated terminal
+    "terminal.integrated.fontFamily": "'CaskaydiaCove Nerd Font Mono'", // Use Nerd Font for terminal (supports icons)
+
+    // --- Language Specific: PHP, Python, Go ---
+    "php.validate.enable": false,                 // Disable built-in PHP validation (usually handled by extensions)
+    "python.languageServer": "Jedi",              // Use 'Jedi' as the engine for Python IntelliSense
+    "go.useLanguageServer": true,                 // Use gopls (Language Server) for Go development
+    "go.toolsManagement.autoUpdate": true,        // Automatically update Go tools (e.g., dlv, staticcheck)
+
+    // --- Language Specific: Markdown & JSON ---
+    "[markdown]": {
+        "editor.defaultFormatter": "yzhang.markdown-all-in-one" // Use Markdown All in One for formatting
+    },
+    "json.schemas": [],                           // Custom JSON schemas for validation (empty)
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter.notebook.ipynb"       // Ensure .ipynb files open with the Jupyter Notebook editor
+    },
+
+    // --- Language Specific: JavaScript (Custom Formatting) ---
+    "[javascript]": {
+        "editor.formatOnSave": true,              // Override: Format JS files automatically on save
+        "editor.defaultFormatter": "esbenp.prettier-vscode" // Use Prettier for JS formatting
+    },
+    "prettier.tabWidth": 4,                       // Set Prettier's indentation to 4 spaces
+
+    // --- Extensions Management ---
+    "extensions.ignoreRecommendations": false,    // Show recommended extensions
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1            // Assign Neovim extension to a separate process for performance
+    },
+    "aws.cloudformation.telemetry.enabled": false, // Disable telemetry data collection for AWS CloudFormation
+    "workbench.panel.showLabels": false,
+
+    // ---  neovim support ---
+    "editor.accessibilitySupport": "off",
+    "editor.occurrencesHighlight": "off",
+    "editor.scrollBeyondLastLine": false,
+    "editor.lineNumbers": "relative",
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.largeFileOptimizations": true,
+}
