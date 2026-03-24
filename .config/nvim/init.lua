@@ -78,6 +78,7 @@ require('lazy').setup({
   require 'plugins.git_signs',
   require 'plugins.misc',
   require 'plugins.tmux',
+  require 'plugins.ai',
 }, {
   ui = {
     icons = vim.g.have_nerd_font and {} or {

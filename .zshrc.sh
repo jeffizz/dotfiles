@@ -15,6 +15,8 @@ OS_TYPE=$(uname)
 # 导入函数
 source ${HOME}/scripts/functions.sh
 
+
+
 if [[ "${OS_TYPE}" == "Darwin" ]]; then
     # source ${HOME}/scripts/.zshrc.osx.sh
 else
@@ -23,6 +25,8 @@ else
         source ${HOME}/scripts/.zshrc.linux.wsl.sh
     fi
 fi
+
+source ${HOME}/.config/keys.sh
 
 # 命令行代理
 alias proxy.on='proxy_on 127.0.0.1:7890'
