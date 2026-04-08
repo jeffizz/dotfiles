@@ -26,7 +26,7 @@ function initUi()
 	app.registerUi({
 		["menu"] = "Open PDF from Folder",
 		["callback"] = "openPdfFromFolder",
-		["accelerator"] = "<Control><Shift>o",
+		["accelerator"] = "<Alt>o",
 	})
 end
 
@@ -74,7 +74,7 @@ function openFileDialog(folder_path)
 	end
 
 	os.execute(cmd)
-	os.execute("sleep 0.5")
+	-- os.execute("sleep 0.5")
 
 	local file = io.open(temp_file, "r")
 	if file then

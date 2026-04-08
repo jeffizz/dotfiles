@@ -6,20 +6,20 @@
   <property name="pressureMultiplier" value="1"/>
   <property name="zoomGesturesEnabled" value="true"/>
   <property name="selectedToolbar" value="Toolbar Left Copy"/>
-  <property name="lastSavePath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@PHP"/>
-  <property name="lastOpenPath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@PHP"/>
+  <property name="lastSavePath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/System"/>
+  <property name="lastOpenPath" value="/Users/codiy/Documents"/>
   <property name="lastImagePath" value="/Users/codiy/Downloads"/>
   <property name="edgePanSpeed" value="20"/>
   <property name="edgePanMaxMult" value="5"/>
   <property name="zoomStep" value="10"/>
   <property name="zoomStepScroll" value="2"/>
   <property name="displayDpi" value="-1"/>
-  <property name="mainWndWidth" value="1108"/>
+  <property name="mainWndWidth" value="1085"/>
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
   <property name="showToolbar" value="true"/>
   <property name="showSidebar" value="true"/>
-  <property name="sidebarWidth" value="345"/>
+  <property name="sidebarWidth" value="186"/>
   <property name="sidebarNumberingStyle" value="1"/>
   <property name="sidebarOnRight" value="false"/>
   <property name="scrollbarOnLeft" value="false"/>
@@ -51,7 +51,7 @@
   <property name="iconTheme" value="iconsColor"/>
   <!--Dark/light mode, allowed values are "useSystem", "forceLight", "forceDark"-->
   <property name="themeVariant" value="useSystem"/>
-  <property name="highlightPosition" value="true"/>
+  <property name="highlightPosition" value="false"/>
   <property name="cursorHighlightColor" value="2164260608"/>
   <property name="cursorHighlightBorderColor" value="2147483903"/>
   <property name="cursorHighlightRadius" value="30"/>
@@ -151,7 +151,7 @@
   <property name="latexSettings.externalEditorAutoConfirm" value="false"/>
   <property name="latexSettings.externalEditorCmd" value=""/>
   <property name="latexSettings.temporaryFileExt" value="tex"/>
-  <property name="font" font="Helvetica" size="12"/>
+  <property name="font" font="Helvetica" size="10"/>
   <data name="buttonConfig">
     <data name="default">
       <attribute name="color" type="hex" value="ffed333b"/>
@@ -207,7 +207,7 @@
     </data>
     <data name="hand"/>
     <data name="highlighter">
-      <attribute name="color" type="hex" value="ff64baff"/>
+      <attribute name="color" type="hex" value="ff9bdb4d"/>
       <attribute name="drawingType" type="string" value="rectangle"/>
       <attribute name="fill" type="int" value="1"/>
       <attribute name="fillAlpha" type="int" value="128"/>
@@ -223,11 +223,11 @@
       <attribute name="size" type="string" value="VERY_FINE"/>
     </data>
     <data name="pen">
-      <attribute name="color" type="hex" value="ff000000"/>
-      <attribute name="drawingType" type="string" value="line"/>
+      <attribute name="color" type="hex" value="ffed5353"/>
+      <attribute name="drawingType" type="string" value="strokeRecognizer"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="74"/>
-      <attribute name="size" type="string" value="MEDIUM"/>
+      <attribute name="size" type="string" value="THIN"/>
       <attribute name="style" type="string" value="plain"/>
     </data>
     <data name="playObject"/>
@@ -235,7 +235,7 @@
     <data name="selectMultiLayerRegion"/>
     <data name="selectObject"/>
     <data name="selectPdfTextLinear">
-      <attribute name="color" type="hex" value="ffffe16b"/>
+      <attribute name="color" type="hex" value="ff9bdb4d"/>
     </data>
     <data name="selectPdfTextRect">
       <attribute name="color" type="hex" value="ff000000"/>
