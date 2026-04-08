@@ -1,0 +1,29 @@
+## Resolving "Cairo error: out of memory" in Xournalpp with Chinese Annotations
+
+![](./images/Cairo-Error.png)
+
+When exporting PDFs from Xournalpp, if your annotations contain Chinese characters, you might encounter a "Cairo error: out of memory". This issue is a known problem that can be resolved by updating specific libraries.
+
+### The Problem
+*   Xournalpp's PDF export fails with a "Cairo error: out of memory" when Chinese characters are present in annotations.
+
+### The Solution
+By tracking [issue #6014 on GitHub](https://github.com/xournalpp/xournalpp/issues/6014), it was discovered that replacing Xournalpp's bundled Cairo libraries with newer versions resolves this problem.
+
+Specifically, you need to replace `libcairo-2.dylib` and `libcairo-gobject-2.dylib` (on macOS, where `.dylib` is the library suffix).
+
+### How to Obtain Newer Libraries
+You have a couple of options to get the updated Cairo libraries:
+
+1.  **Using Homebrew (macOS/Linux):**
+    You can install Cairo using Homebrew, which will provide the latest versions:
+    ```bash
+    brew install cairo
+    ```
+
+2.  **Extracting from Existing Applications (macOS):**
+    Some existing applications, like `pdfgear`, might already contain newer versions of these libraries. You can search for them using a command like this:
+    ```bash
+    find /Applications -name "libcairo*.dylib" 2>/dev/null
+    ```
+    Once found, you can replace the ones bundled with Xournalpp.
