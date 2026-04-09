@@ -2,6 +2,12 @@
 
 function initUi()
 	app.registerUi({
+		["menu"] = "Open New Window",
+		["callback"] = "openNewWindow",
+		["accelerator"] = "<Alt>n",
+	})
+
+	app.registerUi({
 		["menu"] = "-- Custom Shortcuts --",
 		["callback"] = "dummyCallback",
 		["accelerator"] = "", -- No accelerator needed, we handle keys in the plugin
@@ -103,4 +109,9 @@ end
 
 function gotoPage()
 	app.uiAction({ ["action"] = "ACTION_GOTO_PAGE" })
+end
+
+function openNewWindow()
+	local cmd = "open -n -a Xournal++ &"
+	os.execute(cmd)
 end

@@ -27,3 +27,13 @@ You have a couple of options to get the updated Cairo libraries:
     find /Applications -name "libcairo*.dylib" 2>/dev/null
     ```
     Once found, you can replace the ones bundled with Xournalpp.
+
+## Customizing Menus on macOS
+
+Xournal++ menus on macOS can be customized in two ways:
+
+*   **Via Plugins**: Utilize available plugins to modify menu options.
+*   **Direct Configuration**: Edit the `mainmenubar.xml` file, typically found at `/Applications/./Xournal++.app/Contents/Resources/ui/mainmenubar.xml`.
+
+For reference on adapting keybindings (e.g., replacing `Ctrl` with `Meta`, which is often the Command key on macOS), consult the macOS build script:
+`https://github.com/xournalpp/xournalpp/blob/master/mac-setup/build-app.sh`
