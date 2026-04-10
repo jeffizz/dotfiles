@@ -1,3 +1,10 @@
+## Paper configuration in Xournalpp 
+
+it is divided into two main parts:
+
+*   **Line Configuration:** This part allows you to configure the paper's horizontal and vertical lines, including their spacing and color. These settings are managed within the `papertemplates.ini` file.
+*   **paper Layout:** This part deals with applying the desired paper size and background color. Further configuration is required through the menu bar by navigating to `Journal > Configure paper Template`.
+
 ## Resolving "Cairo error: out of memory" in Xournalpp with Chinese Annotations
 
 ![](./images/Cairo-Error.png)
