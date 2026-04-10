@@ -2,12 +2,6 @@
 
 function initUi()
 	app.registerUi({
-		["menu"] = "Open New Window",
-		["callback"] = "openNewWindow",
-		["accelerator"] = "<Alt>n",
-	})
-
-	app.registerUi({
 		["menu"] = "-- Custom Shortcuts --",
 		["callback"] = "dummyCallback",
 		["accelerator"] = "", -- No accelerator needed, we handle keys in the plugin
@@ -66,7 +60,7 @@ function initUi()
 		["callback"] = "gotoPage",
 		["accelerator"] = "g",
 	})
-	for i = 0, 9 do
+	for i = 1, 9 do
 		app.registerUi({ ["menu"] = "Color " .. i, ["callback"] = "color" .. i, ["accelerator"] = tostring(i) })
 	end
 	app.registerUi({ ["menu"] = "Color 10", ["callback"] = "color10", ["accelerator"] = "0" })
@@ -109,9 +103,4 @@ end
 
 function gotoPage()
 	app.uiAction({ ["action"] = "ACTION_GOTO_PAGE" })
-end
-
-function openNewWindow()
-	local cmd = "open -n -a Xournal++ &"
-	os.execute(cmd)
 end
