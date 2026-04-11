@@ -9,7 +9,7 @@ local emojis = {
 	{ emoji = "⚠️", desc = ":warning: \t\t(易错/混淆|有条件)" },
 	{ emoji = "🔴", desc = ":red_circle: \t(错误示范|反模式)" },
 	{ emoji = "❌", desc = ":cross_mark: \t(避坑|陷阱)" },
-	{ emoji = "🔔", desc = ":bell: \t\t\t(注意事项)" },
+	{ emoji = "🔔", desc = ":bell: \t\t\t(注意|事项)" },
 
 	{ emoji = "🤔", desc = ":thinking: \t\t(感悟|存疑)" },
 	{ emoji = "🔍", desc = ":mag: \t\t(查阅|扩展)" },
@@ -18,7 +18,6 @@ local emojis = {
 
 	{ emoji = "🛠️", desc = ":hammer: \t\t(实践练习)" },
 	{ emoji = "📅", desc = ":scroll: \t\t(背景|历史)" },
-
 	{ emoji = "💬", desc = ":speech: \t\t(摘抄|引用)" },
 	{ emoji = "🔗", desc = ":link: \t\t\t(跳转|关联)" },
 }
@@ -95,6 +94,6 @@ function insertEmoji(emoji)
 	end
 
 	if success then
-		app.uiAction({ ["action"] = "ACTION_PASTE" })
+		app.activateAction("paste")
 	end
 end

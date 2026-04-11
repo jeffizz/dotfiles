@@ -2,21 +2,15 @@
 
 function initUi()
 	app.registerUi({
-		["menu"] = "-- Custom Shortcuts --",
-		["callback"] = "dummyCallback",
-		["accelerator"] = "", -- No accelerator needed, we handle keys in the plugin
-	})
-
-	app.registerUi({
 		["menu"] = "Next Page (v)",
 		["callback"] = "nextPage",
 		["accelerator"] = "v",
 	})
 
 	app.registerUi({
-		["menu"] = "Previous Page (r)",
+		["menu"] = "Previous Page (q)",
 		["callback"] = "previousPage",
-		["accelerator"] = "r",
+		["accelerator"] = "q",
 	})
 
 	app.registerUi({
@@ -26,9 +20,9 @@ function initUi()
 	})
 
 	app.registerUi({
-		["menu"] = "Hand Tool(q)",
+		["menu"] = "Hand Tool(r)",
 		["callback"] = "handTool",
-		["accelerator"] = "q",
+		["accelerator"] = "r",
 	})
 
 	app.registerUi({
@@ -66,41 +60,38 @@ function initUi()
 	app.registerUi({ ["menu"] = "Color 10", ["callback"] = "color10", ["accelerator"] = "0" })
 end
 
--- Dummy callback (not used)
-function dummyCallback() end
-
 function nextPage()
-	app.uiAction({ ["action"] = "ACTION_GOTO_NEXT" })
+	app.scrollToPage(1, true)
 end
 
 function previousPage()
-	app.uiAction({ ["action"] = "ACTION_GOTO_BACK" })
+	app.scrollToPage(-1, true)
 end
 
 function textTool()
-	app.uiAction({ ["action"] = "ACTION_TOOL_TEXT" })
+	app.changeActionState("select-tool", app.C.Tool_text)
 end
 
 function handTool()
-	app.uiAction({ ["action"] = "ACTION_TOOL_HAND" })
+	app.changeActionState("select-tool", app.C.Tool_hand)
 end
 
 function highlighterTool()
-	app.uiAction({ ["action"] = "ACTION_TOOL_HIGHLIGHTER" })
+	app.changeActionState("select-tool", app.C.Tool_highlighter)
 end
 
 function pdfTextTool()
-	app.uiAction({ ["action"] = "ACTION_TOOL_SELECT_PDF_TEXT_LINEAR" })
+	app.changeActionState("select-tool", app.C.Tool_selectPdfTextLinear)
 end
 
 function penTool()
-	app.uiAction({ ["action"] = "ACTION_TOOL_PEN" })
+	app.changeActionState("select-tool", app.C.Tool_pen)
 end
 
 function selectObject()
-	app.uiAction({ ["action"] = "ACTION_TOOL_SELECT_OBJECT" })
+	app.changeActionState("select-tool", app.C.Tool_selectObject)
 end
 
 function gotoPage()
-	app.uiAction({ ["action"] = "ACTION_GOTO_PAGE" })
+	app.activateAction("goto-page")
 end

@@ -77,7 +77,7 @@ end
 function onDialogResult(button)
 	if button == 1 then
 		-- User clicked OK, quit the application
-		app.uiAction({ ["action"] = "ACTION_QUIT" })
+		app.activateAction("quit")
 	end
 end
 
