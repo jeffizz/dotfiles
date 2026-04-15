@@ -7,7 +7,7 @@
   <property name="zoomGesturesEnabled" value="true"/>
   <property name="selectedToolbar" value="Toolbar Left Copy"/>
   <property name="lastSavePath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@TypeScript"/>
-  <property name="lastOpenPath" value="/Users/codiy/Documents"/>
+  <property name="lastOpenPath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@TypeScript"/>
   <property name="lastImagePath" value="/Users/codiy/Downloads"/>
   <property name="edgePanSpeed" value="20"/>
   <property name="edgePanMaxMult" value="5"/>
@@ -26,10 +26,11 @@
   <property name="menubarVisible" value="true"/>
   <property name="filepathShownInTitlebar" value="false"/>
   <property name="pageNumberShownInTitlebar" value="true"/>
-  <property name="numColumns" value="3"/>
+  <property name="numColumns" value="2"/>
   <property name="numRows" value="1"/>
   <property name="viewFixedRows" value="false"/>
   <property name="showPairedPages" value="false"/>
+  <property name="showPageShadow" value="true"/>
   <property name="layoutVertical" value="false"/>
   <property name="layoutRightToLeft" value="false"/>
   <property name="layoutBottomToTop" value="false"/>
@@ -168,6 +169,19 @@
     <data name="middle">
       <attribute name="tool" type="string" value="selectPdfTextLinear"/>
     </data>
+    <data name="mouse4">
+      <attribute name="color" type="hex" value="ffe01b24"/>
+      <attribute name="drawingType" type="string" value="strokeRecognizer"/>
+      <attribute name="size" type="string" value="thin"/>
+      <attribute name="strokeType" type="string" value="standard"/>
+      <attribute name="tool" type="string" value="pen"/>
+    </data>
+    <data name="mouse5">
+      <attribute name="color" type="hex" value="fff66151"/>
+      <attribute name="drawingType" type="string" value="rectangle"/>
+      <attribute name="size" type="string" value="medium"/>
+      <attribute name="tool" type="string" value="highlighter"/>
+    </data>
     <data name="right">
       <attribute name="tool" type="string" value="selectRect"/>
     </data>
@@ -194,7 +208,7 @@
     </data>
   </data>
   <data name="tools">
-    <attribute name="current" type="string" value="hand"/>
+    <attribute name="current" type="string" value="text"/>
     <data name="drawArrow"/>
     <data name="drawCoordinateSystem"/>
     <data name="drawDoubleArrow"/>
@@ -223,8 +237,8 @@
       <attribute name="size" type="string" value="VERY_FINE"/>
     </data>
     <data name="pen">
-      <attribute name="color" type="hex" value="ffffa154"/>
-      <attribute name="drawingType" type="string" value="arrow"/>
+      <attribute name="color" type="hex" value="ffed5353"/>
+      <attribute name="drawingType" type="string" value="doubleArrow"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="74"/>
       <attribute name="size" type="string" value="MEDIUM"/>
@@ -244,7 +258,7 @@
     <data name="selectRegion"/>
     <data name="showFloatingToolbox"/>
     <data name="text">
-      <attribute name="color" type="hex" value="ff3a9104"/>
+      <attribute name="color" type="hex" value="ff002e99"/>
     </data>
     <data name="verticalSpace"/>
   </data>
