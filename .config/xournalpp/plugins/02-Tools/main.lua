@@ -1,11 +1,13 @@
--- Configure Page Template Plugin for Xournal++
--- Add custom page template to pagetemplates.ini
-
 function initUi()
 	app.registerUi({
 		["menu"] = "Add My Ruled Paper Template",
 		["callback"] = "addPageTemplate",
 		["accelerator"] = "",
+	})
+	app.registerUi({
+		["menu"] = "Open New Window",
+		["callback"] = "openNewWindow",
+		["accelerator"] = "<Alt>n",
 	})
 end
 
@@ -125,4 +127,9 @@ config=r1=20,f1=0xD6D8D6]]
 		{ "Restart Required!" },
 		"onDialogResult"
 	)
+end
+
+function openNewWindow()
+	local cmd = "open -n -a Xournal++ &"
+	os.execute(cmd)
 end

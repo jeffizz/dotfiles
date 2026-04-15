@@ -9,7 +9,7 @@ function initUi()
 		app.registerUi({
 			["menu"] = i .. "-Column Layout",
 			["callback"] = funcName,
-			["accelerator"] = "<Meta>" .. i,
+			["accelerator"] = "<Ctrl>" .. i,
 		})
 	end
 end

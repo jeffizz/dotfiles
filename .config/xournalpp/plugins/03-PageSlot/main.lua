@@ -36,12 +36,12 @@ function initUi()
 	})
 
 	-- 3. Slots
-	app.registerUi({ ["menu"] = "Save to Slot 1", ["callback"] = "SaveSlot1", ["accelerator"] = "<Alt>z" })
-	app.registerUi({ ["menu"] = "Go to Slot 1", ["callback"] = "returnToSlot1", ["accelerator"] = "<Alt>1" })
-	app.registerUi({ ["menu"] = "Save to Slot 2", ["callback"] = "SaveSlot2", ["accelerator"] = "<Alt>x" })
-	app.registerUi({ ["menu"] = "Go to Slot 2", ["callback"] = "returnToSlot2", ["accelerator"] = "<Alt>2" })
-	app.registerUi({ ["menu"] = "Save to Slot 3", ["callback"] = "SaveSlot3", ["accelerator"] = "<Alt>c" })
-	app.registerUi({ ["menu"] = "Go to Slot 3", ["callback"] = "returnToSlot3", ["accelerator"] = "<Alt>3" })
+	app.registerUi({ ["menu"] = "Save to Slot 1", ["callback"] = "SaveSlot1", ["accelerator"] = "<Alt>1" })
+	app.registerUi({ ["menu"] = "Go to Slot 1", ["callback"] = "returnToSlot1", ["accelerator"] = "<Meta>1" })
+	app.registerUi({ ["menu"] = "Save to Slot 2", ["callback"] = "SaveSlot2", ["accelerator"] = "<ALt>2" })
+	app.registerUi({ ["menu"] = "Go to Slot 2", ["callback"] = "returnToSlot2", ["accelerator"] = "<Meta>2" })
+	app.registerUi({ ["menu"] = "Save to Slot 3", ["callback"] = "SaveSlot3", ["accelerator"] = "<Alt>3" })
+	app.registerUi({ ["menu"] = "Go to Slot 3", ["callback"] = "returnToSlot3", ["accelerator"] = "<Meta>3" })
 
 	loadSavedPages()
 end
