@@ -271,6 +271,7 @@ function cycleShapes()
 		insertCross,
 	}
 
+	app.changeActionState("select-tool", app.C.Tool_pen)
 	shapeFunctions[currentShapeIndex]()
 
 	currentShapeIndex = currentShapeIndex + 1
