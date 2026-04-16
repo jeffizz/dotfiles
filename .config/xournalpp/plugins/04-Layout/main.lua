@@ -35,8 +35,8 @@ function setLayout(columns)
 
 	app.changeActionState("set-columns-or-rows", columns)
 
-	local zoomLevelsSingle = { 1, 0.83, 0.55, 0.42, 0.32, 0.30 }
-	local zoomLevelsDouble = { 1, 0.73, 0.48, 0.37, 0.30, 0.30 }
+	local zoomLevelsSingle = { 1, 0.81, 0.54, 0.42, 0.32, 0.30 }
+	local zoomLevelsDouble = { 1, 0.72, 0.47, 0.37, 0.30, 0.30 }
 
 	local zoomLevel = 1
 	if isDoubleTap then
