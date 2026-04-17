@@ -1,5 +1,54 @@
+local utils = require("utils")
+
 local lastPressTime = 0
 local lastPressColumn = 0
+
+local zoomLevelsSingle = { 1, 0.81, 0.54, 0.42, 0.32, 0.30 }
+local zoomLevelsDouble = { 1, 0.72, 0.47, 0.37, 0.30, 0.30 }
+local configLoaded = false
+
+local function loadLayoutConfig()
+	if configLoaded then
+		return
+	end
+
+	local dbText = utils.getMetadataText()
+	local db = {}
+	if dbText ~= "" then
+		db = utils.parseINI(dbText)
+	end
+
+	local needSave = false
+	db["Layout"] = db["Layout"] or {}
+
+	if db["Layout"]["zoomLevelsSingle"] then
+		local arr = utils.parseArray(db["Layout"]["zoomLevelsSingle"])
+		if #arr >= 6 then
+			zoomLevelsSingle = arr
+		end
+	else
+		db["Layout"]["zoomLevelsSingle"] = table.concat(zoomLevelsSingle, ",")
+		needSave = true
+	end
+
+	if db["Layout"]["zoomLevelsDouble"] then
+		local arr = utils.parseArray(db["Layout"]["zoomLevelsDouble"])
+		if #arr >= 6 then
+			zoomLevelsDouble = arr
+		end
+	else
+		db["Layout"]["zoomLevelsDouble"] = table.concat(zoomLevelsDouble, ",")
+		needSave = true
+	end
+
+	if needSave then
+		if utils.writeMetadata(db) then
+			configLoaded = true
+		end
+	else
+		configLoaded = true
+	end
+end
 
 function initUi()
 	for i = 1, 6 do
@@ -18,6 +67,8 @@ function initUi()
 end
 
 function setLayout(columns)
+	loadLayoutConfig()
+
 	local currentTime = os.clock()
 	local isDoubleTap = false
 
@@ -34,9 +85,6 @@ function setLayout(columns)
 	end
 
 	app.changeActionState("set-columns-or-rows", columns)
-
-	local zoomLevelsSingle = { 1, 0.81, 0.54, 0.42, 0.32, 0.30 }
-	local zoomLevelsDouble = { 1, 0.72, 0.47, 0.37, 0.30, 0.30 }
 
 	local zoomLevel = 1
 	if isDoubleTap then

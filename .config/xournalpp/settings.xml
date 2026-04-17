@@ -6,8 +6,8 @@
   <property name="pressureMultiplier" value="1"/>
   <property name="zoomGesturesEnabled" value="true"/>
   <property name="selectedToolbar" value="Floating Toolbox (experimental) Copy"/>
-  <property name="lastSavePath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@TypeScript"/>
-  <property name="lastOpenPath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/@TypeScript"/>
+  <property name="lastSavePath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/System"/>
+  <property name="lastOpenPath" value="/Users/codiy/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/Books/System"/>
   <property name="lastImagePath" value="/Users/codiy/Downloads"/>
   <property name="edgePanSpeed" value="20"/>
   <property name="edgePanMaxMult" value="5"/>
@@ -18,7 +18,7 @@
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
   <property name="showToolbar" value="true"/>
-  <property name="showSidebar" value="true"/>
+  <property name="showSidebar" value="false"/>
   <property name="sidebarWidth" value="50"/>
   <property name="sidebarNumberingStyle" value="1"/>
   <property name="sidebarOnRight" value="false"/>
@@ -39,7 +39,7 @@
   <property name="emptyLastPageAppend" value="disabled"/>
   <property name="presentationMode" value="false"/>
   <!--Which GUI elements are shown in default view mode, separated by a colon (,)-->
-  <property name="defaultViewModeAttributes" value="showMenubar,showToolbar,showSidebar"/>
+  <property name="defaultViewModeAttributes" value="showMenubar,showToolbar"/>
   <!--Which GUI elements are shown in fullscreen view mode, separated by a colon (,)-->
   <property name="fullscreenViewModeAttributes" value="goFullscren,showToolbar,showSidebar"/>
   <!--Which GUI elements are shown in presentation view mode, separated by a colon (,)-->
@@ -230,10 +230,10 @@
     </data>
     <data name="pen">
       <attribute name="color" type="hex" value="ffed5353"/>
-      <attribute name="drawingType" type="string" value="doubleArrow"/>
+      <attribute name="drawingType" type="string" value="line"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="74"/>
-      <attribute name="size" type="string" value="MEDIUM"/>
+      <attribute name="size" type="string" value="THIN"/>
       <attribute name="style" type="string" value="plain"/>
     </data>
     <data name="playObject"/>
@@ -241,7 +241,7 @@
     <data name="selectMultiLayerRegion"/>
     <data name="selectObject"/>
     <data name="selectPdfTextLinear">
-      <attribute name="color" type="hex" value="ffffa154"/>
+      <attribute name="color" type="hex" value="ffed5353"/>
     </data>
     <data name="selectPdfTextRect">
       <attribute name="color" type="hex" value="ff000000"/>
