@@ -1,6 +1,6 @@
-local utils = {}
+local metadata = {}
 
-function utils.getMetadataText()
+function metadata.getMetadataText()
 	local doc = app.getDocumentStructure()
 	if not doc or not doc.pages or not doc.pages[1] then
 		return ""
@@ -31,7 +31,7 @@ function utils.getMetadataText()
 	return dbText
 end
 
-function utils.parseINI(text)
+function metadata.parseINI(text)
 	local db = {}
 	local currentSection = "Global"
 	for line in text:gmatch("[^\r\n]+") do
@@ -55,7 +55,7 @@ function utils.parseINI(text)
 	return db
 end
 
-function utils.stringifyINI(db)
+function metadata.stringifyINI(db)
 	local lines = {}
 	for section, keys in pairs(db) do
 		table.insert(lines, "[" .. section .. "]")
@@ -67,7 +67,7 @@ function utils.stringifyINI(db)
 	return table.concat(lines, "\n")
 end
 
-function utils.parseArray(str)
+function metadata.parseArray(str)
 	local arr = {}
 	for token in string.gmatch(str, "([^,]+)") do
 		local num = tonumber(token)
@@ -78,7 +78,7 @@ function utils.parseArray(str)
 	return arr
 end
 
-function utils.writeMetadata(db)
+function metadata.writeMetadata(db)
 	local doc = app.getDocumentStructure()
 	local originalPage = doc.currentPage
 
@@ -135,7 +135,7 @@ function utils.writeMetadata(db)
 		app.activateAction("delete")
 	end
 
-	local newText = utils.stringifyINI(db)
+	local newText = metadata.stringifyINI(db)
 	local font = app.getFont()
 	font.size = 10
 	app.addTexts({
@@ -151,4 +151,4 @@ function utils.writeMetadata(db)
 	return true
 end
 
-return utils
+return metadata

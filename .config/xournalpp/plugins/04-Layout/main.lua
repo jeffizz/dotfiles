@@ -1,4 +1,4 @@
-local utils = require("utils")
+local metadata = require("metadata")
 
 local lastPressTime = 0
 local lastPressColumn = 0
@@ -12,17 +12,17 @@ local function loadLayoutConfig()
 		return
 	end
 
-	local dbText = utils.getMetadataText()
+	local dbText = metadata.getMetadataText()
 	local db = {}
 	if dbText ~= "" then
-		db = utils.parseINI(dbText)
+		db = metadata.parseINI(dbText)
 	end
 
 	local needSave = false
 	db["Layout"] = db["Layout"] or {}
 
 	if db["Layout"]["zoomLevelsSingle"] then
-		local arr = utils.parseArray(db["Layout"]["zoomLevelsSingle"])
+		local arr = metadata.parseArray(db["Layout"]["zoomLevelsSingle"])
 		if #arr >= 6 then
 			zoomLevelsSingle = arr
 		end
@@ -32,7 +32,7 @@ local function loadLayoutConfig()
 	end
 
 	if db["Layout"]["zoomLevelsDouble"] then
-		local arr = utils.parseArray(db["Layout"]["zoomLevelsDouble"])
+		local arr = metadata.parseArray(db["Layout"]["zoomLevelsDouble"])
 		if #arr >= 6 then
 			zoomLevelsDouble = arr
 		end
@@ -42,7 +42,7 @@ local function loadLayoutConfig()
 	end
 
 	if needSave then
-		if utils.writeMetadata(db) then
+		if metadata.writeMetadata(db) then
 			configLoaded = true
 		end
 	else

@@ -1,5 +1,3 @@
-local actions = require("actions")
-
 function initUi()
 	app.registerUi({
 		["menu"] = "Add My Ruled Paper Template",
@@ -11,44 +9,6 @@ function initUi()
 		["callback"] = "openNewWindow",
 		["accelerator"] = "<Alt>n",
 	})
-	app.registerUi({
-		menu = "AI: Setup Toolbar Icons",
-		callback = "setupIcons",
-	})
-
-	app.registerUi({
-		menu = "AI: Translate Only",
-		callback = "translateOnly",
-		toolbarId = "ai_translate_only",
-		iconName = "ai_tran",
-	})
-
-	app.registerUi({
-		menu = "AI: Translate & Explain",
-		callback = "translateAndExplain",
-		toolbarId = "ai_trans_and_explain",
-		iconName = "ai_te",
-	})
-
-	app.registerUi({
-		menu = "AI: Tech Summary",
-		callback = "summarize",
-		toolbarId = "ai_summary",
-		iconName = "ai_sum",
-	})
-end
-
-function translateOnly()
-	actions.translateOnly()
-end
-function translateAndExplain()
-	actions.translateAndExplain()
-end
-function summarize()
-	actions.summarize()
-end
-function setupIcons()
-	actions.setupIcons()
 end
 
 -- Get the path to pagetemplates.ini based on OS
