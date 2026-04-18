@@ -16,7 +16,6 @@ function initUi()
 		callback = "smartTranslateClipboard",
 		toolbarId = "ai_smart_translate",
 		iconName = "ai_smart",
-		accelerator = "<Alt>d",
 	})
 
 	app.registerUi({
