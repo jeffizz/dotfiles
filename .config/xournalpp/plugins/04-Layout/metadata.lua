@@ -1,5 +1,13 @@
 local metadata = {}
 
+function metadata.getFingerprint()
+	local doc = app.getDocumentStructure()
+	if not doc or not doc.pages or not doc.pages[1] then
+		return "no_document"
+	end
+	return tostring(#doc.pages) .. "_" .. tostring(doc.pages[1].pageWidth)
+end
+
 function metadata.getMetadataText()
 	local doc = app.getDocumentStructure()
 	if not doc or not doc.pages or not doc.pages[1] then
