@@ -42,6 +42,7 @@ function initUi()
 	app.registerUi({ ["menu"] = "Go to Slot 2", ["callback"] = "returnToSlot2", ["accelerator"] = "<Meta>2" })
 	app.registerUi({ ["menu"] = "Save to Slot 3", ["callback"] = "SaveSlot3", ["accelerator"] = "<Alt>3" })
 	app.registerUi({ ["menu"] = "Go to Slot 3", ["callback"] = "returnToSlot3", ["accelerator"] = "<Meta>3" })
+	app.registerUi({ ["menu"] = "Go to Page (g)", ["callback"] = "gotoPage", ["accelerator"] = "g" })
 
 	loadSavedPages()
 end
@@ -95,7 +96,7 @@ function getFileKey()
 	return tostring(hash)
 end
 
-function gotoPage(target)
+function scrollToPage(target)
 	if target and target > 0 then
 		app.scrollToPage(target, false)
 	end
@@ -124,15 +125,15 @@ function toggleTeleport()
 		showNote("Point A set: " .. current)
 	elseif current == tp.a then
 		if tp.b ~= 0 then
-			gotoPage(tp.b)
+			scrollToPage(tp.b)
 		else
 			showNote("Point B not set. Move to another page and press Alt+W.")
 		end
 	elseif tp.b == 0 or current ~= tp.b then
 		tp.b = current
-		gotoPage(tp.a)
+		scrollToPage(tp.a)
 	else
-		gotoPage(tp.a)
+		scrollToPage(tp.a)
 	end
 end
 
@@ -141,7 +142,7 @@ function popPage0()
 	if savedPages[key] and savedPages[key][0] and #savedPages[key][0] > 0 then
 		local target = table.remove(savedPages[key][0])
 		saveSavedPages()
-		gotoPage(target)
+		scrollToPage(target)
 	end
 end
 
@@ -180,7 +181,7 @@ function returnToSlot(slot)
 	local key = getFileKey()
 	if savedPages[key] and savedPages[key][slot] then
 		pushPage0()
-		gotoPage(savedPages[key][slot])
+		scrollToPage(savedPages[key][slot])
 	else
 		showNote("Slot " .. slot .. " is empty")
 	end
@@ -203,4 +204,11 @@ function SaveSlot3()
 end
 function returnToSlot3()
 	returnToSlot(3)
+end
+
+function gotoPage()
+	local key = getFileKey()
+	teleportStations[key] = { a = 0, b = 0 }
+	teleportStations[key].a = app.getDocumentStructure().currentPage
+	app.activateAction("goto-page")
 end
