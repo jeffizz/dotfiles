@@ -14,19 +14,19 @@
   <property name="zoomStep" value="1"/>
   <property name="zoomStepScroll" value="1"/>
   <property name="displayDpi" value="-1"/>
-  <property name="mainWndWidth" value="1705"/>
+  <property name="mainWndWidth" value="720"/>
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
-  <property name="showToolbar" value="true"/>
-  <property name="showSidebar" value="true"/>
-  <property name="sidebarWidth" value="186"/>
+  <property name="showToolbar" value="false"/>
+  <property name="showSidebar" value="false"/>
+  <property name="sidebarWidth" value="50"/>
   <property name="sidebarNumberingStyle" value="1"/>
   <property name="sidebarOnRight" value="false"/>
   <property name="scrollbarOnLeft" value="false"/>
   <property name="menubarVisible" value="true"/>
   <property name="filepathShownInTitlebar" value="false"/>
   <property name="pageNumberShownInTitlebar" value="true"/>
-  <property name="numColumns" value="2"/>
+  <property name="numColumns" value="1"/>
   <property name="numRows" value="1"/>
   <property name="viewFixedRows" value="false"/>
   <property name="showPairedPages" value="false"/>
@@ -39,7 +39,7 @@
   <property name="emptyLastPageAppend" value="disabled"/>
   <property name="presentationMode" value="false"/>
   <!--Which GUI elements are shown in default view mode, separated by a colon (,)-->
-  <property name="defaultViewModeAttributes" value="showMenubar,showToolbar,showSidebar"/>
+  <property name="defaultViewModeAttributes" value="showMenubar,showToolbar"/>
   <!--Which GUI elements are shown in fullscreen view mode, separated by a colon (,)-->
   <property name="fullscreenViewModeAttributes" value="goFullscren,showToolbar,showSidebar"/>
   <!--Which GUI elements are shown in presentation view mode, separated by a colon (,)-->
@@ -200,7 +200,7 @@
     </data>
   </data>
   <data name="tools">
-    <attribute name="current" type="string" value="selectPdfTextLinear"/>
+    <attribute name="current" type="string" value="pen"/>
     <data name="drawArrow"/>
     <data name="drawCoordinateSystem"/>
     <data name="drawDoubleArrow"/>
@@ -241,7 +241,7 @@
     <data name="selectMultiLayerRegion"/>
     <data name="selectObject"/>
     <data name="selectPdfTextLinear">
-      <attribute name="color" type="hex" value="999bdb4d"/>
+      <attribute name="color" type="hex" value="99ed5353"/>
     </data>
     <data name="selectPdfTextRect">
       <attribute name="color" type="hex" value="99000000"/>

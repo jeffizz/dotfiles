@@ -158,6 +158,8 @@ function setupShortcutIcons()
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><g transform="rotate(25 32 32)"><path d="M 20,12 Q 32,8 44,12 L 38,38 L 26,38 Z" fill="#ffe16b" stroke="#333333" stroke-width="2" stroke-linejoin="round"/><path d="M 22,13 Q 27,11 28,13 L 28,36 L 26,36 Z" fill="#ffffff" opacity="0.4"/><polygon points="24,38 40,38 38,46 26,46" fill="#2c3e50" stroke="#333333" stroke-width="2" stroke-linejoin="round"/><polygon points="28,46 36,46 36,54 26,58" fill="#ffe16b" stroke="#333333" stroke-width="2" stroke-linejoin="round"/></g><g transform="translate(16, 16)"><path d="M30 16 h4 v32 h-4 Z M16 30 h32 v4 h-32 Z" fill="#2C3E50"/><path d="M30 16 h4 v32 h-4 Z M16 30 h32 v4 h-32 Z" fill="#2C3E50" transform="rotate(45 32 32)"/><circle cx="32" cy="32" r="12" fill="#2C3E50"/><circle cx="32" cy="32" r="5" fill="#FFFFFF"/></g></svg>'
 	local svgConfigBase =
 		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><rect x="8" y="6" width="20" height="40" rx="4" fill="#3498DB" stroke="#FFFFFF" stroke-width="2" transform="rotate(50 18 42)"/><rect x="8" y="6" width="20" height="40" rx="4" fill="#2ECC71" stroke="#FFFFFF" stroke-width="2" transform="rotate(25 18 42)"/><rect x="8" y="6" width="20" height="40" rx="4" fill="#E74C3C" stroke="#FFFFFF" stroke-width="2" transform="rotate(0 18 42)"/><circle cx="18" cy="40" r="3.5" fill="#FFFFFF"/><circle cx="18" cy="40" r="1.5" fill="#BDC3C7"/><g transform="translate(16, 16)"><path d="M30 16 h4 v32 h-4 Z M16 30 h32 v4 h-32 Z" fill="#2C3E50"/><path d="M30 16 h4 v32 h-4 Z M16 30 h32 v4 h-32 Z" fill="#2C3E50" transform="rotate(45 32 32)"/><circle cx="32" cy="32" r="12" fill="#2C3E50"/><circle cx="32" cy="32" r="5" fill="#FFFFFF"/></g></svg>'
+	local svgToolPen =
+		'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><g transform="translate(32 32) rotate(45) scale(1.15) translate(-32 -32)"><path d="M 24,15 L 24,11 A 8 6 0 0 1 40 11 L 40,15 Z" fill="#F28B82"/><rect x="24" y="15" width="16" height="8" fill="#A0B0C0"/><rect x="24" y="23" width="16" height="24" fill="#FFCA28"/><polygon points="24,47 40,47 32,59" fill="#FF0000"/></g></svg>'
 
 	local function hx(num)
 		return string.format("#%06x", num)
@@ -177,6 +179,7 @@ function setupShortcutIcons()
 		["sc_config_pdf.svg"] = svgConfigPdf,
 		["sc_config_hl.svg"] = svgConfigHl,
 		["sc_set_color.svg"] = svgConfigBase,
+		["sc_tool_pen.svg"] = svgToolPen,
 	}
 
 	for name, content in pairs(files) do
@@ -381,7 +384,13 @@ function initUi()
 
 	if enableShortcuts then
 		app.registerUi({ ["menu"] = "Text Tool (w)", ["callback"] = "textTool", ["accelerator"] = "w" })
-		app.registerUi({ ["menu"] = "Pen Tool (a)", ["callback"] = "penTool", ["accelerator"] = "a" })
+		app.registerUi({
+			["menu"] = "Pen Tool (a)",
+			["callback"] = "penTool",
+			["accelerator"] = "a",
+			toolbarId = "sc_tool_pen",
+			iconName = "sc_tool_pen",
+		})
 		app.registerUi({ ["menu"] = "Select PDF Text (s)", ["callback"] = "pdfTextTool", ["accelerator"] = "s" })
 		app.registerUi({ ["menu"] = "Highlighter Tool (d)", ["callback"] = "highlighterTool", ["accelerator"] = "d" })
 	end
