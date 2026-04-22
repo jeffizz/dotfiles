@@ -223,6 +223,54 @@ local function insertCross()
 	renderAndSelect({ strokeCircle, strokeBar1, strokeBar2 })
 end
 
+local function insertQuestion()
+	local cx, cy = getCenter()
+	local color = 0xE5A50A
+	local s = GLOBAL_RADIUS / 35.0
+
+	local circleX, circleY = {}, {}
+	for i = 0, 360, 10 do
+		table.insert(circleX, cx + GLOBAL_RADIUS * math.cos(math.rad(i)))
+		table.insert(circleY, cy + GLOBAL_RADIUS * math.sin(math.rad(i)))
+	end
+	table.insert(circleX, circleX[1])
+	table.insert(circleY, circleY[1])
+	local strokeCircle = createStroke(circleX, circleY, color, 60)
+
+	local topX, topY = {}, {}
+	for a = 140, 400, 10 do
+		table.insert(topX, cx + 13 * s * math.cos(math.rad(a)))
+		table.insert(topY, cy - 8 * s + 13 * s * math.sin(math.rad(a)))
+	end
+	table.insert(topX, cx + 4 * s)
+	table.insert(topY, cy + 8 * s)
+	table.insert(topX, cx + 4 * s)
+	table.insert(topY, cy + 15 * s)
+	table.insert(topX, cx - 4 * s)
+	table.insert(topY, cy + 15 * s)
+	table.insert(topX, cx - 4 * s)
+	table.insert(topY, cy + 8 * s)
+	for a = 400, 140, -10 do
+		table.insert(topX, cx + 5 * s * math.cos(math.rad(a)))
+		table.insert(topY, cy - 8 * s + 5 * s * math.sin(math.rad(a)))
+	end
+	table.insert(topX, topX[1])
+	table.insert(topY, topY[1])
+	local strokeTop = createStroke(topX, topY, color, 255)
+
+	local dotX, dotY = {}, {}
+	local r_dot = 4.5 * s
+	for i = 0, 360, 20 do
+		table.insert(dotX, cx + r_dot * math.cos(math.rad(i)))
+		table.insert(dotY, cy + 23 * s + r_dot * math.sin(math.rad(i)))
+	end
+	table.insert(dotX, dotX[1])
+	table.insert(dotY, dotY[1])
+	local strokeDot = createStroke(dotX, dotY, color, 255)
+
+	renderAndSelect({ strokeCircle, strokeTop, strokeDot })
+end
+
 function drawHollowStar()
 	insertHollowStar()
 end
@@ -240,6 +288,9 @@ function drawSolidExclamation()
 end
 function drawSolidCross()
 	insertCross()
+end
+function drawSolidQuestion()
+	insertQuestion()
 end
 
 function cycleShapes()
@@ -268,6 +319,7 @@ function cycleShapes()
 		insertHeart,
 		insertCheckmark,
 		insertExclamation,
+		insertQuestion,
 		insertCross,
 	}
 
