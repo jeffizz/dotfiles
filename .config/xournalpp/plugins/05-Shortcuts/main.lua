@@ -3,7 +3,11 @@ function initUi()
 	app.registerUi({ ["menu"] = "Previous Page (q)", ["callback"] = "previousPage", ["accelerator"] = "q" })
 	app.registerUi({ ["menu"] = "Hand Tool(r)", ["callback"] = "handTool", ["accelerator"] = "r" })
 	app.registerUi({ ["menu"] = "Select Object (f)", ["callback"] = "selectObject", ["accelerator"] = "f" })
-	app.registerUi({ ["menu"] = "Select Object (f)", ["callback"] = "showFloatingToolbox", ["accelerator"] = "<ctrl>e" })
+	app.registerUi({
+		["menu"] = "Show floating toolbox",
+		["callback"] = "showFloatingToolbox",
+		["accelerator"] = "<ctrl>e",
+	})
 end
 
 function nextPage()

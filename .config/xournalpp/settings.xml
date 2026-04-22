@@ -17,9 +17,9 @@
   <property name="mainWndWidth" value="1081"/>
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
-  <property name="showToolbar" value="true"/>
+  <property name="showToolbar" value="false"/>
   <property name="showSidebar" value="true"/>
-  <property name="sidebarWidth" value="50"/>
+  <property name="sidebarWidth" value="186"/>
   <property name="sidebarNumberingStyle" value="1"/>
   <property name="sidebarOnRight" value="false"/>
   <property name="scrollbarOnLeft" value="false"/>
@@ -200,7 +200,7 @@
     </data>
   </data>
   <data name="tools">
-    <attribute name="current" type="string" value="selectPdfTextLinear"/>
+    <attribute name="current" type="string" value="pen"/>
     <data name="drawArrow"/>
     <data name="drawCoordinateSystem"/>
     <data name="drawDoubleArrow"/>
@@ -229,7 +229,7 @@
       <attribute name="size" type="string" value="VERY_FINE"/>
     </data>
     <data name="pen">
-      <attribute name="color" type="hex" value="ffed5353"/>
+      <attribute name="color" type="hex" value="ffe5a50a"/>
       <attribute name="drawingType" type="string" value="line"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="74"/>
