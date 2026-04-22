@@ -7,6 +7,9 @@ local hlSlots = {}
 
 local DEFAULT_SLOTS = { 0xed5353, 0x9bdb4d, 0x64baff, 0xcd9ef7, 0xffa154 }
 
+local CYCLE_COLORS_SOLID = { 0xED5353, 0x3A9104, 0x002E99, 0x9141AC, 0xFF7800 }
+local CYCLE_COLORS_TRANSPARENT = { 0xED5353, 0x9BDB4D, 0x64BAFF, 0xCD9EF7, 0xFFA154 }
+
 local PALETTE = {
 	{ color = 0xED5353, emoji = "🔴", name = "Red (Soft)" },
 	{ color = 0xFF0000, emoji = "🔴", name = "Red (Bright)" },
@@ -79,7 +82,8 @@ local function getEmojiForHex(hex)
 end
 
 local function toHexString(num)
-	return string.format("0x%06X", num)
+	local hexStr = string.format("%08X", tonumber(num) or 0)
+	return "0x" .. string.sub(hexStr, -6)
 end
 
 local function loadColorsConfig()
@@ -375,6 +379,47 @@ function toggleShortcuts()
 	)
 end
 
+function cycleToolColor()
+	local currentTool = app.getActionState("select-tool")
+	local currentColor = app.getActionState("tool-color")
+
+	local targetArray = CYCLE_COLORS_SOLID
+
+	if currentTool == app.C.Tool_highlighter or currentTool == app.C.Tool_selectPdfTextLinear then
+		targetArray = CYCLE_COLORS_TRANSPARENT
+	elseif currentTool == app.C.Tool_pen or currentTool == app.C.Tool_text then
+		targetArray = CYCLE_COLORS_SOLID
+	else
+		local curHex = string.lower(toHexString(currentColor))
+		for _, c in ipairs(CYCLE_COLORS_TRANSPARENT) do
+			if string.lower(toHexString(c)) == curHex then
+				targetArray = CYCLE_COLORS_TRANSPARENT
+				break
+			end
+		end
+	end
+
+	local nextColor = targetArray[1]
+	local curHex = string.lower(toHexString(currentColor))
+
+	for i, color in ipairs(targetArray) do
+		if string.lower(toHexString(color)) == curHex then
+			local nextIdx = (i % #targetArray) + 1
+			nextColor = targetArray[nextIdx]
+			break
+		end
+	end
+
+	app.changeToolColor({ ["color"] = nextColor, ["selection"] = true })
+	app.changeActionState("tool-color", nextColor)
+
+	if TOOL_KEYS[currentTool] then
+		loadColorsConfig()
+		toolColors[TOOL_KEYS[currentTool]] = nextColor
+		saveColorsConfig()
+	end
+end
+
 function initUi()
 	local db = config.read()
 	local enableShortcuts = true
@@ -395,6 +440,11 @@ function initUi()
 		app.registerUi({ ["menu"] = "Highlighter Tool (d)", ["callback"] = "highlighterTool", ["accelerator"] = "d" })
 	end
 
+	app.registerUi({
+		["menu"] = "ToolColor: Cycle Tool Color (c)",
+		["callback"] = "cycleToolColor",
+		["accelerator"] = "c",
+	})
 	app.registerUi({ menu = "ToolColor: Setup Icons", callback = "setupShortcutIcons" })
 	app.registerUi({ menu = "ToolColor: Toggle Shortcuts (On/Off)", callback = "toggleShortcuts" })
 
