@@ -14,7 +14,7 @@
   <property name="zoomStep" value="1"/>
   <property name="zoomStepScroll" value="1"/>
   <property name="displayDpi" value="-1"/>
-  <property name="mainWndWidth" value="1081"/>
+  <property name="mainWndWidth" value="1115"/>
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
   <property name="showToolbar" value="false"/>
@@ -229,8 +229,8 @@
       <attribute name="size" type="string" value="VERY_FINE"/>
     </data>
     <data name="pen">
-      <attribute name="color" type="hex" value="ffe5a50a"/>
-      <attribute name="drawingType" type="string" value="line"/>
+      <attribute name="color" type="hex" value="ffffe16b"/>
+      <attribute name="drawingType" type="string" value="default"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="74"/>
       <attribute name="size" type="string" value="THIN"/>
@@ -241,7 +241,7 @@
     <data name="selectMultiLayerRegion"/>
     <data name="selectObject"/>
     <data name="selectPdfTextLinear">
-      <attribute name="color" type="hex" value="999bdb4d"/>
+      <attribute name="color" type="hex" value="99ffe16b"/>
     </data>
     <data name="selectPdfTextRect">
       <attribute name="color" type="hex" value="99000000"/>

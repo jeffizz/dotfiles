@@ -2,6 +2,12 @@ local savedPages = {}
 local teleportStations = {}
 local lastClickTime = 0
 
+local slotStates = {
+	[1] = { lastTime = 0, originPage = 0 },
+	[2] = { lastTime = 0, originPage = 0 },
+	[3] = { lastTime = 0, originPage = 0 },
+}
+
 local function getTmpDir()
 	local dir = os.getenv("TMPDIR") or os.getenv("TEMP") or os.getenv("TMP") or "/tmp"
 	if dir:sub(-1) == "/" or dir:sub(-1) == "\\" then
@@ -36,12 +42,21 @@ function initUi()
 	})
 
 	-- 3. Slots
-	app.registerUi({ ["menu"] = "Save to Slot 1", ["callback"] = "SaveSlot1", ["accelerator"] = "<Alt>1" })
-	app.registerUi({ ["menu"] = "Go to Slot 1", ["callback"] = "returnToSlot1", ["accelerator"] = "<Meta>1" })
-	app.registerUi({ ["menu"] = "Save to Slot 2", ["callback"] = "SaveSlot2", ["accelerator"] = "<ALt>2" })
-	app.registerUi({ ["menu"] = "Go to Slot 2", ["callback"] = "returnToSlot2", ["accelerator"] = "<Meta>2" })
-	app.registerUi({ ["menu"] = "Save to Slot 3", ["callback"] = "SaveSlot3", ["accelerator"] = "<Alt>3" })
-	app.registerUi({ ["menu"] = "Go to Slot 3", ["callback"] = "returnToSlot3", ["accelerator"] = "<Meta>3" })
+	app.registerUi({
+		["menu"] = "Slot 1 (Single:Go, Double:Save)",
+		["callback"] = "slotAction1",
+		["accelerator"] = "<Alt>1",
+	})
+	app.registerUi({
+		["menu"] = "Slot 2 (Single:Go, Double:Save)",
+		["callback"] = "slotAction2",
+		["accelerator"] = "<Alt>2",
+	})
+	app.registerUi({
+		["menu"] = "Slot 3 (Single:Go, Double:Save)",
+		["callback"] = "slotAction3",
+		["accelerator"] = "<Alt>3",
+	})
 	app.registerUi({ ["menu"] = "Go to Page (g)", ["callback"] = "gotoPage", ["accelerator"] = "g" })
 
 	loadSavedPages()
@@ -166,44 +181,54 @@ function pushPage0()
 	end
 end
 
-function SaveSlot(slot)
+local function handleSlotAction(slot)
 	local key = getFileKey()
 	local current = app.getDocumentStructure().currentPage
-	if not savedPages[key] then
-		savedPages[key] = {}
-	end
-	savedPages[key][slot] = current
-	saveSavedPages()
-	showNote("Slot " .. slot .. " Saved: Page " .. current)
-end
+	local now = os.clock()
+	local state = slotStates[slot]
 
-function returnToSlot(slot)
-	local key = getFileKey()
-	if savedPages[key] and savedPages[key][slot] then
-		pushPage0()
-		scrollToPage(savedPages[key][slot])
+	if (now - state.lastTime) < 0.5 then
+		local targetToSave = state.originPage
+
+		if current ~= targetToSave then
+			app.scrollToPage(targetToSave, false)
+		end
+
+		if not savedPages[key] then
+			savedPages[key] = {}
+		end
+		if type(savedPages[key][0]) == "table" and #savedPages[key][0] > 0 then
+			if savedPages[key][0][#savedPages[key][0]] == targetToSave then
+				table.remove(savedPages[key][0])
+			end
+		end
+
+		savedPages[key][slot] = targetToSave
+		saveSavedPages()
+		showNote("✅ Slot " .. slot .. " Saved: Page " .. targetToSave)
+
+		state.lastTime = 0
 	else
-		showNote("Slot " .. slot .. " is empty")
+		state.lastTime = now
+		state.originPage = current
+
+		if savedPages[key] and savedPages[key][slot] then
+			pushPage0()
+			scrollToPage(savedPages[key][slot])
+		else
+			-- showNote("Slot " .. slot .. " is empty. Double-press to save current page.")
+		end
 	end
 end
 
-function SaveSlot1()
-	SaveSlot(1)
+function slotAction1()
+	handleSlotAction(1)
 end
-function returnToSlot1()
-	returnToSlot(1)
+function slotAction2()
+	handleSlotAction(2)
 end
-function SaveSlot2()
-	SaveSlot(2)
-end
-function returnToSlot2()
-	returnToSlot(2)
-end
-function SaveSlot3()
-	SaveSlot(3)
-end
-function returnToSlot3()
-	returnToSlot(3)
+function slotAction3()
+	handleSlotAction(3)
 end
 
 function gotoPage()
