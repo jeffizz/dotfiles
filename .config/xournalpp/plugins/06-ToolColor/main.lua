@@ -412,12 +412,6 @@ function cycleToolColor()
 
 	app.changeToolColor({ ["color"] = nextColor, ["selection"] = true })
 	app.changeActionState("tool-color", nextColor)
-
-	if TOOL_KEYS[currentTool] then
-		loadColorsConfig()
-		toolColors[TOOL_KEYS[currentTool]] = nextColor
-		saveColorsConfig()
-	end
 end
 
 function initUi()
