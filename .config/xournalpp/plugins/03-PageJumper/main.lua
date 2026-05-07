@@ -138,17 +138,23 @@ function toggleTeleport()
 	if tp.a == 0 then
 		tp.a = current
 		showNote("Point A set: " .. current)
-	elseif current == tp.a then
-		if tp.b ~= 0 then
+	elseif tp.b == 0 then
+		if current == tp.a then
+			showNote("Point B not set. Move to another page and press Alt+W.")
+		else
+			tp.b = current
+			scrollToPage(tp.a)
+		end
+	else
+		local distA = math.abs(current - tp.a)
+		local distB = math.abs(current - tp.b)
+		if distA <= distB then
+			tp.a = current
 			scrollToPage(tp.b)
 		else
-			showNote("Point B not set. Move to another page and press Alt+W.")
+			tp.b = current
+			scrollToPage(tp.a)
 		end
-	elseif tp.b == 0 or current ~= tp.b then
-		tp.b = current
-		scrollToPage(tp.a)
-	else
-		scrollToPage(tp.a)
 	end
 end
 
