@@ -507,12 +507,14 @@ local function handleTableAction(action)
 	local layerNo = doc.pages[pageNo].currentLayer
 	local now = os.time()
 
-	if (now - tblState.lastTime > 8) or (tblState.page ~= pageNo) or (tblState.layer ~= layerNo) then
+	if (now - tblState.lastTime > 5) or (tblState.page ~= pageNo) or (tblState.layer ~= layerNo) then
 		local cx, cy = getCenter()
 		tblState.startX = cx - 60
 		tblState.startY = cy - 17.5
 		tblState.rows = 1
 		tblState.cols = 1
+		tblState.cellW = 30
+		tblState.cellH = 15
 		tblState.refs = {}
 
 		if action == "makeSquare" then
