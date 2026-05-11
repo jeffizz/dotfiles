@@ -11,6 +11,19 @@ local seqLastTime = 0
 local seqNum = 1
 local seqLastShapeType = 0
 
+local tblState = {
+	lastTime = 0,
+	page = nil,
+	layer = nil,
+	startX = 0,
+	startY = 0,
+	rows = 0,
+	cols = 0,
+	cellW = 30,
+	cellH = 15,
+	refs = {},
+}
+
 local function getCenter()
 	local doc = app.getDocumentStructure()
 	local pageNo = doc.currentPage
@@ -57,6 +70,8 @@ local function renderAndSelect(strokesTable)
 			app.addToSelection(lastDrawnRefs)
 		end
 	end
+
+	return lastDrawnRefs
 end
 
 local function insertHollowStar()
@@ -456,21 +471,7 @@ local function insertSequenceMarker(shapeType)
 	end
 
 	app.changeActionState("select-tool", app.C.Tool_pen)
-
-	app.addStrokes({ strokes = strokes })
-	app.refreshPage()
-
-	local allStrokes = app.getStrokes("layer")
-	if allStrokes then
-		for i = #allStrokes, #allStrokes - #strokes + 1, -1 do
-			if allStrokes[i] and allStrokes[i].ref then
-				table.insert(seqRefs, allStrokes[i].ref)
-			end
-		end
-		if #seqRefs > 0 then
-			app.addToSelection(seqRefs)
-		end
-	end
+	seqRefs = renderAndSelect(strokes)
 end
 
 function drawSeqCircle()
@@ -478,6 +479,92 @@ function drawSeqCircle()
 end
 function drawSeqTriangle()
 	insertSequenceMarker(2)
+end
+
+local function drawTableGrid()
+	local strokes = {}
+	local color = 0xE74C3C
+	local totalW = tblState.cols * tblState.cellW
+	local totalH = tblState.rows * tblState.cellH
+
+	for r = 0, tblState.rows do
+		local y = tblState.startY + r * tblState.cellH
+		table.insert(strokes, createStroke({ tblState.startX, tblState.startX + totalW }, { y, y }, color, 0))
+	end
+
+	for c = 0, tblState.cols do
+		local x = tblState.startX + c * tblState.cellW
+		table.insert(strokes, createStroke({ x, x }, { tblState.startY, tblState.startY + totalH }, color, 0))
+	end
+
+	app.changeActionState("select-tool", app.C.Tool_pen)
+	return renderAndSelect(strokes)
+end
+
+local function handleTableAction(action)
+	local doc = app.getDocumentStructure()
+	local pageNo = doc.currentPage
+	local layerNo = doc.pages[pageNo].currentLayer
+	local now = os.time()
+
+	if (now - tblState.lastTime > 8) or (tblState.page ~= pageNo) or (tblState.layer ~= layerNo) then
+		local cx, cy = getCenter()
+		tblState.startX = cx - 60
+		tblState.startY = cy - 17.5
+		tblState.rows = 1
+		tblState.cols = 1
+		tblState.refs = {}
+
+		if action == "makeSquare" then
+			tblState.cellW = tblState.cellH
+		end
+	else
+		if action == "addCol" then
+			tblState.cols = tblState.cols + 1
+		elseif action == "addRow" then
+			tblState.rows = tblState.rows + 1
+		elseif action == "cycleW" then
+			tblState.cellW = tblState.cellW + 10
+			if tblState.cellW > 200 then
+				tblState.cellW = 30
+			end
+		elseif action == "cycleH" then
+			tblState.cellH = tblState.cellH + 5
+			if tblState.cellH > 100 then
+				tblState.cellH = 15
+			end
+		elseif action == "makeSquare" then
+			tblState.cellW = tblState.cellH
+		end
+	end
+
+	tblState.lastTime = os.time()
+	tblState.page = pageNo
+	tblState.layer = layerNo
+
+	if #tblState.refs > 0 then
+		app.addToSelection(tblState.refs)
+		app.activateAction("delete")
+		app.refreshPage()
+	end
+
+	tblState.refs = drawTableGrid()
+end
+
+function drawTableCol()
+	handleTableAction("addCol")
+end
+function drawTableRow()
+	handleTableAction("addRow")
+end
+function cycleTableWidth()
+	handleTableAction("cycleW")
+end
+function cycleTableHeight()
+	handleTableAction("cycleH")
+end
+function makeTableSquare()
+	handleTableAction("makeSquare")
 end
 
 function initUi()
@@ -494,4 +581,10 @@ function initUi()
 		callback = "drawSeqTriangle",
 		accelerator = "<Alt>v",
 	})
+
+	app.registerUi({ menu = "Shape: Table Add Column", callback = "drawTableCol", accelerator = "<Alt>t" })
+	app.registerUi({ menu = "Shape: Table New Row", callback = "drawTableRow", accelerator = "<Alt>r" })
+	app.registerUi({ menu = "Shape: Table Cycle Width", callback = "cycleTableWidth", accelerator = "<Alt>h" })
+	app.registerUi({ menu = "Shape: Table Cycle Height", callback = "cycleTableHeight", accelerator = "<Alt>l" })
+	app.registerUi({ menu = "Shape: Table Make Square", callback = "makeTableSquare", accelerator = "<Alt>k" })
 end
