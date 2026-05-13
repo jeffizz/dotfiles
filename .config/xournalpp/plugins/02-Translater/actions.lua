@@ -15,8 +15,8 @@ local function getDictAppConfig()
 	local dbText = metadata.getMetadataText()
 	if dbText ~= "" then
 		local db = metadata.parseINI(dbText)
-		if db["common"] and db["common"]["dict_app"] then
-			cachedDictApp = string.lower(tostring(db["common"]["dict_app"])):gsub("^%s*(.-)%s*$", "%1")
+		if db["Common"] and db["Common"]["DictApp"] then
+			cachedDictApp = string.lower(tostring(db["Common"]["DictApp"])):gsub("^%s*(.-)%s*$", "%1")
 		end
 	end
 
@@ -80,8 +80,8 @@ function actions.onDictDialogResult(selectedIndex)
 		db = metadata.parseINI(dbText)
 	end
 
-	db["common"] = db["common"] or {}
-	db["common"]["dict_app"] = selection
+	db["Common"] = db["Common"] or {}
+	db["Common"]["DictApp"] = selection
 	metadata.writeMetadata(db)
 
 	cachedDictApp = selection
