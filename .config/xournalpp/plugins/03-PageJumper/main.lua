@@ -688,46 +688,76 @@ local function parseOutlineTree(text, printedOffset, pdfToInternalMap)
 end
 
 local function getChapterPrefix(title)
+	-- 1. trim
 	local t = title:match("^[ \t]*(.-)[ \t]*$")
 	if not t or t == "" then
 		return nil
 	end
 
-	local colon_pos = t:find("：")
-	local eng_colon = t:find(":")
-
-	local first_colon = nil
-	if colon_pos and eng_colon then
-		first_colon = math.min(colon_pos, eng_colon)
-	else
-		first_colon = colon_pos or eng_colon
+	-- 2. eg: Chapter 1, Part II, Appendix A
+	local p1_num = t:match("^(%a+[ \t]+%d+)[%.%:]?[ \t\194\227]")
+	if p1_num then
+		return p1_num
 	end
 
-	if first_colon and first_colon <= 30 then
-		local prefix = t:sub(1, first_colon - 1)
-		prefix = prefix:match("^[ \t]*(.-)[ \t]*$")
-		if prefix and prefix ~= "" then
-			return prefix
-		end
+	local p1_rom = t:match("^(%a+[ \t]+[IVX]+)[%.%:]?[ \t\194\227]")
+	if p1_rom then
+		return p1_rom
 	end
 
-	local min_pos = #t + 1
-	local function checkPos(pos)
-		if pos and pos < min_pos then
-			min_pos = pos
-		end
+	local p1_let = t:match("^(%a+[ \t]+%u)[%.%:]?[ \t\194\227]")
+	if p1_let then
+		return p1_let
 	end
 
-	checkPos(t:find(" "))
-	checkPos(t:find("\t"))
-	checkPos(t:find("\227\128\128"))
-	checkPos(t:find("\194\160"))
+	-- eg: Volume 1
+	local e1_num = t:match("^(%a+[ \t]+%d+)$")
+	if e1_num then
+		return e1_num
+	end
 
-	if min_pos <= #t then
-		local prefix = t:sub(1, min_pos - 1)
-		if prefix ~= "" then
-			return prefix
-		end
+	local e1_rom = t:match("^(%a+[ \t]+[IVX]+)$")
+	if e1_rom then
+		return e1_rom
+	end
+
+	local e1_let = t:match("^(%a+[ \t]+%u)$")
+	if e1_let then
+		return e1_let
+	end
+
+	-- 3. Digits, eg:10.2, 1.1.3, 3
+	local num_prefix = t:match("^([%d%.]+)[ \t\194\227]")
+	if num_prefix and num_prefix:match("%d") then
+		return num_prefix
+	end
+
+	local num_exact = t:match("^([%d%.]+)$")
+	if num_exact and num_exact:match("%d") then
+		return num_exact
+	end
+
+	-- 4. Chinese "第x章", "第x部分"
+	local zh_chapter = t:match("^(第.-章)")
+	if zh_chapter and #zh_chapter <= 30 then
+		return zh_chapter
+	end
+
+	local zh_part = t:match("^(第.-部分)")
+	if zh_part and #zh_part <= 30 then
+		return zh_part
+	end
+
+	local zh_section = t:match("^(第.-节)")
+	if zh_section and #zh_section <= 30 then
+		return zh_section
+	end
+
+	-- 5. colons
+	local colon_pos = t:find("[:：]")
+	if colon_pos and colon_pos <= 30 then
+		local prefix = t:sub(1, colon_pos - 1)
+		return prefix:match("^[ \t]*(.-)[ \t]*$")
 	end
 
 	return nil
