@@ -310,18 +310,6 @@ function handleJumpDialogResult(selectedIndex)
 	pendingJumpTargets = nil
 end
 
-local function findInternalPageByPdfNo(targetPdfNo, doc)
-	if targetPdfNo <= 0 then
-		return nil
-	end
-	for i = 1, #doc.pages do
-		if doc.pages[i].pdfBackgroundPageNo == targetPdfNo then
-			return i
-		end
-	end
-	return nil
-end
-
 function highlightKeyword(text, term)
 	if not text or not term or term == "" then
 		return text
@@ -346,6 +334,7 @@ function searchAndJump()
 
 	local current = doc.currentPage
 	local pdfPath = doc.pdfBackgroundFilename
+	local pdfToInternalMap = buildPdfToInternalMap(doc)
 
 	if not pdfPath or pdfPath == "" then
 		showNote("❌ No PDF background found for search.")
@@ -391,7 +380,7 @@ function searchAndJump()
 				local pageNo = tonumber(pageStr)
 
 				if not seenPages[pageNo] then
-					local targetInternal = findInternalPageByPdfNo(pageNo, doc)
+					local targetInternal = pdfToInternalMap[pageNo]
 					if targetInternal then
 						seenPages[pageNo] = true
 						local displayPageNo = pageNo - printedOffset
@@ -477,6 +466,7 @@ function autoParseAndJump()
 	end
 
 	local allTargets = {}
+	local pdfToInternalMap = buildPdfToInternalMap(doc)
 
 	for _, n in ipairs(nums) do
 		local targetInternal = nil
@@ -486,7 +476,7 @@ function autoParseAndJump()
 			end
 		else
 			local targetPdfNo = (mode == 3) and (n + printedOffset) or n
-			targetInternal = findInternalPageByPdfNo(targetPdfNo, doc)
+			targetInternal = pdfToInternalMap[targetPdfNo]
 		end
 
 		if targetInternal then
@@ -629,6 +619,284 @@ function showPageInfo()
 	)
 end
 
+function buildPdfToInternalMap(doc)
+	local map = {}
+	if not doc or not doc.pages then
+		return map
+	end
+	for i = 1, #doc.pages do
+		local bgNo = doc.pages[i].pdfBackgroundPageNo
+		if bgNo and bgNo > 0 and not map[bgNo] then
+			map[bgNo] = i
+		end
+	end
+	return map
+end
+
+local function parseOutlineTree(text, printedOffset, pdfToInternalMap)
+	local lines = {}
+	for line in text:gmatch("[^\r\n]+") do
+		if not line:match("^warning:") then
+			table.insert(lines, line)
+		end
+	end
+
+	local root = { children = {}, title = "ROOT", level = -1 }
+	local stack = { [-1] = root }
+
+	local isFlat = not text:match("[%+%-]")
+	local startRecording = isFlat
+
+	for _, line in ipairs(lines) do
+		local symbol, indent, title, page = line:match('^([%+|%-])(%s*)"(.*)".-#page=(%d+)')
+		if symbol then
+			local level = #indent
+			local isLeaf = (symbol == "|")
+			local targetPage = tonumber(page)
+			local displayPage = targetPage - (printedOffset or 0)
+			local targetInternal = pdfToInternalMap[targetPage]
+			local node = {
+				title = title,
+				targetPage = targetInternal,
+				displayPage = displayPage,
+				isLeaf = isLeaf,
+				level = level,
+				children = {},
+			}
+
+			if not startRecording and not isLeaf then
+				startRecording = true
+			end
+
+			if startRecording then
+				local parentLevel = level - 1
+				while parentLevel >= -1 and not stack[parentLevel] do
+					parentLevel = parentLevel - 1
+				end
+				local parent = stack[parentLevel] or root
+
+				table.insert(parent.children, node)
+				stack[level] = node
+
+				for i = level + 1, 20 do
+					stack[i] = nil
+				end
+			end
+		end
+	end
+	return root
+end
+
+local function getChapterPrefix(title)
+	local t = title:match("^[ \t]*(.-)[ \t]*$")
+	if not t or t == "" then
+		return nil
+	end
+
+	local colon_pos = t:find("：")
+	local eng_colon = t:find(":")
+
+	local first_colon = nil
+	if colon_pos and eng_colon then
+		first_colon = math.min(colon_pos, eng_colon)
+	else
+		first_colon = colon_pos or eng_colon
+	end
+
+	if first_colon and first_colon <= 30 then
+		local prefix = t:sub(1, first_colon - 1)
+		prefix = prefix:match("^[ \t]*(.-)[ \t]*$")
+		if prefix and prefix ~= "" then
+			return prefix
+		end
+	end
+
+	local min_pos = #t + 1
+	local function checkPos(pos)
+		if pos and pos < min_pos then
+			min_pos = pos
+		end
+	end
+
+	checkPos(t:find(" "))
+	checkPos(t:find("\t"))
+	checkPos(t:find("\227\128\128"))
+	checkPos(t:find("\194\160"))
+
+	if min_pos <= #t then
+		local prefix = t:sub(1, min_pos - 1)
+		if prefix ~= "" then
+			return prefix
+		end
+	end
+
+	return nil
+end
+
+function renderOutlineDialog()
+	if not pendingJumpContext or not pendingJumpContext.allNodes then
+		return
+	end
+
+	local nodes = pendingJumpContext.allNodes
+	local totalItems = #nodes
+	local totalPages = math.ceil(totalItems / ITEMS_PER_PAGE)
+	local p = pendingJumpContext.dialogPage
+
+	local startIdx = (p - 1) * ITEMS_PER_PAGE + 1
+	local endIdx = math.min(p * ITEMS_PER_PAGE, totalItems)
+
+	local dialogOptions = {}
+	local dialogTargets = {}
+
+	local message = "📖 Outline: " .. pendingJumpContext.parentTitle .. "\n"
+	if totalPages > 1 then
+		message = message .. "(Page " .. p .. "/" .. totalPages .. ")\n"
+	end
+	message = message .. "\n"
+
+	if pendingJumpContext.history and #pendingJumpContext.history > 0 then
+		table.insert(dialogOptions, "⬆️ Back")
+		table.insert(dialogTargets, "back")
+	end
+	if p > 1 then
+		table.insert(dialogOptions, "⬅️ Prev")
+		table.insert(dialogTargets, "prev")
+	end
+
+	for i = startIdx, endIdx do
+		local node = nodes[i]
+		local marker = (node.isLeaf or #node.children == 0) and "" or "📂"
+		local prefix = getChapterPrefix(node.title)
+		local btnLabel = ""
+		if prefix then
+			btnLabel = string.format("%s%s", prefix, marker)
+		else
+			btnLabel = string.format("P%d%s", node.displayPage, marker)
+		end
+		table.insert(dialogOptions, btnLabel)
+		table.insert(dialogTargets, i)
+		message = message .. string.format("[P%d]\t %s%s\n", node.displayPage, node.title, marker)
+	end
+
+	if p < totalPages then
+		table.insert(dialogOptions, "Next ➡️")
+		table.insert(dialogTargets, "next")
+	end
+
+	table.insert(dialogOptions, "🚫 Close")
+	table.insert(dialogTargets, "cancel")
+
+	pendingJumpTargets = dialogTargets
+	app.openDialog(message, dialogOptions, "handleOutlineDialogResult")
+end
+
+function handleOutlineDialogResult(selectedIndex)
+	if not pendingJumpContext or not pendingJumpTargets or not selectedIndex then
+		return
+	end
+	local idx = tonumber(selectedIndex)
+	if not idx then
+		return
+	end
+
+	local cmd = pendingJumpTargets[idx] or pendingJumpTargets[idx + 1]
+
+	if cmd == "next" then
+		pendingJumpContext.dialogPage = pendingJumpContext.dialogPage + 1
+		renderOutlineDialog()
+	elseif cmd == "prev" then
+		pendingJumpContext.dialogPage = pendingJumpContext.dialogPage - 1
+		renderOutlineDialog()
+	elseif cmd == "cancel" then
+		pendingJumpContext = nil
+	elseif cmd == "back" then
+		local lastContext = table.remove(pendingJumpContext.history)
+		pendingJumpContext.allNodes = lastContext.nodes
+		pendingJumpContext.parentTitle = lastContext.title
+		pendingJumpContext.dialogPage = lastContext.page or 1
+		renderOutlineDialog()
+	elseif type(cmd) == "number" then
+		local selectedNode = pendingJumpContext.allNodes[cmd]
+
+		if selectedNode.isLeaf or #selectedNode.children == 0 then
+			local key = getFileKey()
+			if not teleportStations[key] then
+				teleportStations[key] = { a = 0, b = 0 }
+			end
+			teleportStations[key].a = app.getDocumentStructure().currentPage
+			scrollToPage(selectedNode.targetPage)
+			pendingJumpContext = nil
+		else
+			table.insert(pendingJumpContext.history, {
+				nodes = pendingJumpContext.allNodes,
+				title = pendingJumpContext.parentTitle,
+				page = pendingJumpContext.dialogPage,
+			})
+			pendingJumpContext.allNodes = selectedNode.children
+			pendingJumpContext.parentTitle = selectedNode.title
+			pendingJumpContext.dialogPage = 1
+			renderOutlineDialog()
+		end
+	end
+end
+
+function showPdfOutline()
+	local doc = app.getDocumentStructure()
+	if not doc or not doc.pdfBackgroundFilename or doc.pdfBackgroundFilename == "" then
+		showNote("❌ No PDF background found.")
+		return
+	end
+
+	local db = fetchMetadata()
+	local mutoolExec = db["Common"] and db["Common"]["MutoolPath"]
+
+	if not mutoolExec or mutoolExec == "" then
+		showNote(
+			"⚠️ Mutool is not configured!\n\nPlease copy the mutool executable path to your clipboard, then use the menu:\n[Config from Clipboard (Path/Offset)]"
+		)
+		return
+	end
+	local printedOffset = tonumber(db["PageJumpper"] and db["PageJumpper"]["PrintedOffset"]) or 0
+
+	local os_name = package.config:sub(1, 1) == "\\" and "win" or "unix"
+	local safePath = '"' .. doc.pdfBackgroundFilename:gsub('"', '\\"') .. '"'
+
+	local cmd =
+		string.format('"%s" show %s outline 2>%s', mutoolExec, safePath, os_name == "win" and "nul" or "/dev/null")
+
+	local f = io.popen(cmd, "r")
+	if not f then
+		showNote("❌ Failed to run mutool.")
+		return
+	end
+	local output = f:read("*a")
+	f:close()
+
+	if not output or output == "" then
+		showNote("🔍 No outline found in this PDF.")
+		return
+	end
+
+	local pdfToInternalMap = buildPdfToInternalMap(doc)
+	local tree = parseOutlineTree(output, printedOffset, pdfToInternalMap)
+	if #tree.children == 0 then
+		showNote("🔍 Outline is empty after filtering.")
+		return
+	end
+
+	pendingJumpContext = {
+		origin = doc.currentPage,
+		mode = "outline",
+		parentTitle = "Table of Contents",
+		allNodes = tree.children,
+		dialogPage = 1,
+		history = {},
+	}
+
+	renderOutlineDialog()
+end
+
 function loadSavedPages()
 	local file = io.open(dataFile, "r")
 	if file then
@@ -672,14 +940,9 @@ function initUi()
 	app.registerUi({ ["menu"] = "Slot 1 (Save/Go)", ["callback"] = "slotAction1", ["accelerator"] = "<Alt>1" })
 	app.registerUi({ ["menu"] = "Slot 2 (Save/Go)", ["callback"] = "slotAction2", ["accelerator"] = "<Alt>2" })
 	app.registerUi({ ["menu"] = "Slot 3 (Save/Go)", ["callback"] = "slotAction3", ["accelerator"] = "<Alt>3" })
-
+	app.registerUi({ ["menu"] = "PDF Outline", ["callback"] = "showPdfOutline", ["accelerator"] = "<Alt>a" })
+	app.registerUi({ ["menu"] = "Clipboard Search", ["callback"] = "searchAndJump", ["accelerator"] = "<Alt>f" })
 	app.registerUi({ ["menu"] = "Smart Jump", ["callback"] = "autoParseAndJump", ["accelerator"] = "<Alt>g" })
-	app.registerUi({
-		["menu"] = "Search & Jump (Clipboard)",
-		["callback"] = "searchAndJump",
-		["accelerator"] = "<Alt>f",
-	})
-
 	app.registerUi({ ["menu"] = "Go to Page (g)", ["callback"] = "gotoPage", ["accelerator"] = "g" })
 	app.registerUi({ ["menu"] = "Config from Clipboard (Path/Offset)", ["callback"] = "processClipboardConfig" })
 	app.registerUi({ ["menu"] = "Debug: Page Info", ["callback"] = "showPageInfo" })
