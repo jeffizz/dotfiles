@@ -158,7 +158,6 @@ local function extractNumbersFromPage(doc, current)
 			pdfBgNo,
 			os_name == "win" and "nul" or "/dev/null"
 		)
-
 		local f = io.popen(cmd, "r")
 		if f then
 			local pdfText = f:read("*a")
@@ -204,6 +203,16 @@ function renderJumpDialog()
 	local dialogOptions = {}
 	local dialogTargets = {}
 
+	local message = ""
+	local prefix = (pendingJumpContext.mode == "search") and "🔍 Search Results"
+		or string.format("Smart Jump (Mode %d)", pendingJumpContext.mode)
+
+	if totalPages > 1 then
+		message = string.format("%s (Page %d/%d):\n\n", prefix, p, totalPages)
+	else
+		message = string.format("%s:\n\n", prefix)
+	end
+
 	if p > 1 then
 		table.insert(dialogOptions, "⬅️ Prev")
 		table.insert(dialogTargets, "prev")
@@ -212,6 +221,9 @@ function renderJumpDialog()
 	for i = startIdx, endIdx do
 		table.insert(dialogOptions, items[i].label)
 		table.insert(dialogTargets, items[i].target)
+		if items[i].snippet then
+			message = message .. string.format("[P%d] %s\n", items[i].pageNo, items[i].snippet)
+		end
 	end
 
 	if p < totalPages then
@@ -224,14 +236,7 @@ function renderJumpDialog()
 
 	pendingJumpTargets = dialogTargets
 
-	local title = ""
-	if totalPages > 1 then
-		title = string.format("Smart Jump (Mode %d) - Page %d/%d:", pendingJumpContext.mode, p, totalPages)
-	else
-		title = string.format("Smart Jump (Mode %d):", pendingJumpContext.mode)
-	end
-
-	app.openDialog(title, dialogOptions, "handleJumpDialogResult")
+	app.openDialog(message, dialogOptions, "handleJumpDialogResult")
 end
 
 function handleJumpDialogResult(selectedIndex)
@@ -282,6 +287,89 @@ local function findInternalPageByPdfNo(targetPdfNo, doc)
 	return nil
 end
 
+function searchAndJump()
+	local doc = app.getDocumentStructure()
+	if not doc or not doc.pages then
+		return
+	end
+
+	local current = doc.currentPage
+	local pdfPath = doc.pdfBackgroundFilename
+
+	if not pdfPath or pdfPath == "" then
+		showNote("❌ No PDF background found for search.")
+		return
+	end
+
+	local txt = getClipboardText()
+	if not txt or txt == "" then
+		showNote("❌ Clipboard is empty.")
+		return
+	end
+
+	local db = fetchMetadata()
+	local mutoolExec = (db["Common"] and db["Common"]["MutoolPath"]) or "mutool"
+	local printedOffset = tonumber(db["PageJumpper"] and db["PageJumpper"]["PrintedOffset"]) or 0
+
+	local os_name = package.config:sub(1, 1) == "\\" and "win" or "unix"
+	local nullDev = os_name == "win" and "nul" or "/dev/null"
+	local safePath = '"' .. pdfPath:gsub('"', '\\"') .. '"'
+
+	local safeTerm = ""
+	if os_name == "win" then
+		safeTerm = '"' .. txt:gsub('"', '""') .. '"'
+	else
+		safeTerm = "'" .. txt:gsub("'", "'\\''") .. "'"
+	end
+
+	local allTargets = {}
+	local seenPages = {}
+
+	local cmd = string.format('"%s" grep -i -n %s %s 2>%s', mutoolExec, safeTerm, safePath, nullDev)
+	local f = io.popen(cmd, "r")
+	if f then
+		local output = f:read("*a")
+		f:close()
+
+		for line in output:gmatch("[^\r\n]+") do
+			local pageStr, lineTxt = line:match("^(%d+)%s+(.*)$")
+			if pageStr then
+				local pageNo = tonumber(pageStr)
+
+				if not seenPages[pageNo] then
+					local targetInternal = findInternalPageByPdfNo(pageNo, doc)
+					if targetInternal then
+						seenPages[pageNo] = true
+
+						local displayPageNo = pageNo - printedOffset
+						table.insert(allTargets, {
+							label = string.format("P%d", displayPageNo),
+							target = targetInternal,
+							pageNo = displayPageNo,
+							snippet = lineTxt,
+						})
+					end
+				end
+			end
+		end
+	end
+
+	if #allTargets == 0 then
+		local displayTxt = #txt > 20 and (txt:sub(1, 20) .. "...") or txt
+		showNote("🔍 Text not found in PDF:\n" .. displayTxt)
+		return
+	end
+
+	pendingJumpContext = {
+		origin = current,
+		mode = "search",
+		allTargets = allTargets,
+		dialogPage = 1,
+	}
+
+	renderJumpDialog()
+end
+
 function autoParseAndJump()
 	local doc = app.getDocumentStructure()
 	if not doc or not doc.pages then
@@ -324,7 +412,11 @@ function autoParseAndJump()
 		end
 
 		if targetInternal then
-			table.insert(allTargets, { label = string.format("P%d", n), target = targetInternal })
+			table.insert(allTargets, {
+				label = string.format("P%d", n),
+				target = targetInternal,
+				pageNo = n,
+			})
 		end
 	end
 
@@ -333,13 +425,7 @@ function autoParseAndJump()
 		return
 	end
 
-	pendingJumpContext = {
-		origin = current,
-		mode = mode,
-		allTargets = allTargets,
-		dialogPage = 1,
-	}
-
+	pendingJumpContext = { origin = current, mode = mode, allTargets = allTargets, dialogPage = 1 }
 	renderJumpDialog()
 end
 
@@ -407,7 +493,6 @@ local function handleSlotAction(slot)
 		state.lastTime = now
 		state.originPage = current
 		if savedPages[key] and savedPages[key][slot] then
-			local key = getFileKey()
 			if not teleportStations[key] then
 				teleportStations[key] = { a = 0, b = 0 }
 			end
@@ -450,17 +535,10 @@ function showPageInfo()
 	local config = page.pageTypeConfig or "Unknown"
 	local bgColor = page.backgroundColor or "Unknown"
 	local pdfBgPage = page.pdfBackgroundPageNo or 0
-	local isAnnotated = page.isAnnotated and "true" or "false"
 
 	showNote(
 		string.format(
-			"📄 Page: %d / %d\n"
-				.. "🖼️ pdfPageNo: %s\n"
-				.. "🛠️ Mutool: %s\n"
-				.. "📏 Size (W x H): %s x %s\n"
-				.. "📝 pageTypeFormat: %s\n"
-				.. "⚙️ pageTypeConfig: %s\n"
-				.. "🎨 backgroundColor: %s\n",
+			"📄 Page: %d / %d\n🖼️ pdfPageNo: %s\n🛠️ Mutool: %s\n📏 Size: %s x %s\n📝 Format: %s\n🎨 BgColor: %s",
 			pageNo,
 			#doc.pages,
 			tostring(pdfBgPage),
@@ -468,7 +546,6 @@ function showPageInfo()
 			tostring(width),
 			tostring(height),
 			tostring(format),
-			tostring(config),
 			tostring(bgColor)
 		)
 	)
@@ -517,9 +594,15 @@ function initUi()
 	app.registerUi({ ["menu"] = "Slot 1 (Save/Go)", ["callback"] = "slotAction1", ["accelerator"] = "<Alt>1" })
 	app.registerUi({ ["menu"] = "Slot 2 (Save/Go)", ["callback"] = "slotAction2", ["accelerator"] = "<Alt>2" })
 	app.registerUi({ ["menu"] = "Slot 3 (Save/Go)", ["callback"] = "slotAction3", ["accelerator"] = "<Alt>3" })
-	app.registerUi({ ["menu"] = "Smart Jump", ["callback"] = "autoParseAndJump", ["accelerator"] = "<Alt>g" })
-	app.registerUi({ ["menu"] = "Go to Page (g)", ["callback"] = "gotoPage", ["accelerator"] = "g" })
 
+	app.registerUi({ ["menu"] = "Smart Jump", ["callback"] = "autoParseAndJump", ["accelerator"] = "<Alt>g" })
+	app.registerUi({
+		["menu"] = "Search & Jump (Clipboard)",
+		["callback"] = "searchAndJump",
+		["accelerator"] = "<Alt>f",
+	})
+
+	app.registerUi({ ["menu"] = "Go to Page (g)", ["callback"] = "gotoPage", ["accelerator"] = "g" })
 	app.registerUi({ ["menu"] = "Config from Clipboard (Path/Offset)", ["callback"] = "processClipboardConfig" })
 	app.registerUi({ ["menu"] = "Debug: Page Info", ["callback"] = "showPageInfo" })
 

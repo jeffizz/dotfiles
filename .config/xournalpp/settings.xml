@@ -14,12 +14,12 @@
   <property name="zoomStep" value="1"/>
   <property name="zoomStepScroll" value="1"/>
   <property name="displayDpi" value="-1"/>
-  <property name="mainWndWidth" value="1134"/>
+  <property name="mainWndWidth" value="1276"/>
   <property name="mainWndHeight" value="1045"/>
   <property name="maximized" value="false"/>
   <property name="showToolbar" value="false"/>
   <property name="showSidebar" value="true"/>
-  <property name="sidebarWidth" value="186"/>
+  <property name="sidebarWidth" value="326"/>
   <property name="sidebarNumberingStyle" value="1"/>
   <property name="sidebarOnRight" value="false"/>
   <property name="scrollbarOnLeft" value="false"/>
@@ -200,7 +200,7 @@
     </data>
   </data>
   <data name="tools">
-    <attribute name="current" type="string" value="hand"/>
+    <attribute name="current" type="string" value="selectPdfTextLinear"/>
     <data name="drawArrow"/>
     <data name="drawCoordinateSystem"/>
     <data name="drawDoubleArrow"/>
@@ -213,7 +213,7 @@
     </data>
     <data name="hand"/>
     <data name="highlighter">
-      <attribute name="color" type="hex" value="ff9bdb4d"/>
+      <attribute name="color" type="hex" value="ff64baff"/>
       <attribute name="drawingType" type="string" value="rectangle"/>
       <attribute name="fill" type="int" value="0"/>
       <attribute name="fillAlpha" type="int" value="153"/>
