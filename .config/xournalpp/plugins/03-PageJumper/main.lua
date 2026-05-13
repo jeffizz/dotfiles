@@ -187,6 +187,37 @@ local function scrollToPage(target)
 	end
 end
 
+function utf8sub(str, startChar, numChars)
+	local startIndex = 1
+	while startChar > 1 do
+		local byte = string.byte(str, startIndex)
+		startIndex = startIndex + getByteCount(byte)
+		startChar = startChar - 1
+	end
+
+	local currentIndex = startIndex
+	while numChars > 0 and currentIndex <= #str do
+		local byte = string.byte(str, currentIndex)
+		currentIndex = currentIndex + getByteCount(byte)
+		numChars = numChars - 1
+	end
+
+	return str:sub(startIndex, currentIndex - 1)
+end
+
+function getByteCount(byte)
+	if byte >= 0 and byte <= 127 then
+		return 1
+	elseif byte >= 192 and byte <= 223 then
+		return 2
+	elseif byte >= 224 and byte <= 239 then
+		return 3
+	elseif byte >= 240 and byte <= 247 then
+		return 4
+	end
+	return 1
+end
+
 function renderJumpDialog()
 	if not pendingJumpContext then
 		return
@@ -218,11 +249,15 @@ function renderJumpDialog()
 		table.insert(dialogTargets, "prev")
 	end
 
+	local term = pendingJumpContext.searchTerm or ""
+
 	for i = startIdx, endIdx do
 		table.insert(dialogOptions, items[i].label)
 		table.insert(dialogTargets, items[i].target)
 		if items[i].snippet then
-			message = message .. string.format("[P%d] %s\n", items[i].pageNo, items[i].snippet)
+			local snippet = utf8sub(items[i].snippet, 1, 100)
+			local highlightedSnippet = highlightKeyword(snippet, term)
+			message = message .. string.format("[%s%d] %s\n", items[i].prefix, items[i].pageNo, highlightedSnippet)
 		end
 	end
 
@@ -287,6 +322,22 @@ local function findInternalPageByPdfNo(targetPdfNo, doc)
 	return nil
 end
 
+function highlightKeyword(text, term)
+	if not text or not term or term == "" then
+		return text
+	end
+
+	local escapedTerm = term:gsub("[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1")
+
+	local caseInsensitivePattern = escapedTerm:gsub("%a", function(char)
+		return string.format("[%s%s]", string.lower(char), string.upper(char))
+	end)
+
+	local pattern = "(" .. caseInsensitivePattern .. ")"
+	local highlighted, _ = text:gsub(pattern, "⭐%1", 1)
+	return highlighted
+end
+
 function searchAndJump()
 	local doc = app.getDocumentStructure()
 	if not doc or not doc.pages then
@@ -322,7 +373,10 @@ function searchAndJump()
 		safeTerm = "'" .. txt:gsub("'", "'\\''") .. "'"
 	end
 
+	local searchTerm = txt:lower()
 	local allTargets = {}
+
+	-- --- A: mutool PDF search ---
 	local seenPages = {}
 
 	local cmd = string.format('"%s" grep -i -n %s %s 2>%s', mutoolExec, safeTerm, safePath, nullDev)
@@ -340,16 +394,35 @@ function searchAndJump()
 					local targetInternal = findInternalPageByPdfNo(pageNo, doc)
 					if targetInternal then
 						seenPages[pageNo] = true
-
 						local displayPageNo = pageNo - printedOffset
 						table.insert(allTargets, {
 							label = string.format("P%d", displayPageNo),
 							target = targetInternal,
 							pageNo = displayPageNo,
+							prefix = "P",
 							snippet = lineTxt,
 						})
 					end
 				end
+			end
+		end
+	end
+
+	-- --- B: Xournal++ Note Search ---
+	local seenXoPages = {}
+	local allXoppTexts = app.getTexts("all") or {}
+	for _, txtObj in pairs(allXoppTexts) do
+		if type(txtObj) == "table" and txtObj.text and txtObj.text:lower():find(searchTerm, 1, true) then
+			local xoPage = txtObj.page
+			if not seenXoPages[xoPage] then
+				seenXoPages[xoPage] = true
+				table.insert(allTargets, {
+					label = string.format("X%d", xoPage),
+					target = xoPage,
+					pageNo = xoPage,
+					prefix = "X",
+					snippet = txtObj.text:gsub("[\r\n]+", " "),
+				})
 			end
 		end
 	end
@@ -360,10 +433,15 @@ function searchAndJump()
 		return
 	end
 
+	table.sort(allTargets, function(a, b)
+		return a.target < b.target
+	end)
+
 	pendingJumpContext = {
 		origin = current,
 		mode = "search",
 		allTargets = allTargets,
+		searchTerm = txt,
 		dialogPage = 1,
 	}
 
